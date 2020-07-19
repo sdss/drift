@@ -484,7 +484,7 @@ class WAGO(object):
 
         return
 
-    async def __aexit__(self):
+    async def __aexit__(self, exc_type, exc, tb):
         """Closes the connection to the WAGO server."""
 
         self.client.stop()
