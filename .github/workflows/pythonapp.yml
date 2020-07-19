@@ -61,3 +61,6 @@ jobs:
         pip install pytest-cov
         pip install asyncmock
         pytest
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
