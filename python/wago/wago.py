@@ -312,15 +312,16 @@ class Device(object):
 
         """
 
-        with self.module.wago:
+        async with self.module.wago:
 
             protocol = self.client.protocol
 
             if self.coils:
-                resp = await protocol.read_coils(self.address, count=1)
+                reader = protocol.read_coils
             else:
-                resp = await protocol.read_input_registers(self.address,
-                                                           count=1)
+                reader = protocol.read_input_registers
+
+            resp = await reader(self.address, count=1)
 
             if resp.function_code > 0x80:
                 raise WAGOError(f'Invalid response for device '
@@ -354,11 +355,11 @@ class Device(object):
         if self.module.mode != 'output':
             raise WAGOError('Writing is not allowed to this module.')
 
-        with self.module.wago:
+        async with self.module.wago:
 
             protocol = self.client.protocol
 
-            if self.coil:
+            if self.coils:
                 resp = await protocol.write_coil(self.address, value)
             else:
                 resp = await protocol.write_register(self.address, value)
