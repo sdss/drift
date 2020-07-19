@@ -9,6 +9,7 @@
 import sys
 import types
 from functools import partial
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -69,14 +70,16 @@ def wago():
 
     protocol = wago_instance.client.protocol
 
-    protocol.read_input_registers = AsyncMock(side_effect=partial(read_mocker,
+    protocol.read_input_registers = MagicMock(side_effect=partial(read_mocker,
                                                                   state,
                                                                   coil=False))
-    protocol.read_coils = AsyncMock(side_effect=partial(read_mocker,
+    protocol.read_coils = MagicMock(side_effect=partial(read_mocker,
                                                         state,
                                                         coil=True))
-    protocol.write_coil = AsyncMock(side_effect=partial(write_mocker, state))
-    protocol.write_register = AsyncMock(side_effect=partial(write_mocker, state))
+    protocol.write_coil = MagicMock(side_effect=partial(write_mocker,
+                                                        state))
+    protocol.write_register = MagicMock(side_effect=partial(write_mocker,
+                                                            state))
 
     yield wago_instance
 
