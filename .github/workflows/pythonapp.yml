@@ -59,4 +59,5 @@ jobs:
         pip install pytest
         pip install coverage[toml]
         pip install pytest-cov
+        pip install asyncmock
         pytest

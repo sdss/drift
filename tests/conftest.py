@@ -6,13 +6,21 @@
 # @Filename: conftest.py
 # @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
 
+import sys
 import types
 from functools import partial
-from unittest.mock import AsyncMock
 
 import pytest
 
 from wago import WAGO, Relay
+
+
+if sys.version_info.major < 3:
+    raise ValueError('Python 2 is not supported.')
+if sys.version_info.minor <= 7:
+    from asyncmock import AsyncMock
+else:
+    from unittest.mock import AsyncMock
 
 
 async def read_mocker(state, address, coil=False, count=1):
