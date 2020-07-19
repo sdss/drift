@@ -92,7 +92,7 @@ def default_wago(wago):
     module1.add_device('temp1', 0, adaptor='ee_temp')
 
     module2 = wago.add_module('module2', 40101, mode='output', channels=4)
-    module2.add_device('relay1', 0, device_class=Relay)
+    module2.add_device('relay1', 0, device_class=Relay, category='relay')
 
     wago._state[40001] = 100
     wago._state[40101] = False
