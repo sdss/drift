@@ -3,7 +3,7 @@
 #
 # @Author: José Sánchez-Gallego (gallegoj@uw.edu)
 # @Date: 2019-11-11
-# @Filename: wago.py
+# @Filename: drift.py
 # @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
 
 import asyncio
@@ -15,10 +15,10 @@ from pymodbus.client.asynchronous.asyncio import AsyncioModbusTcpClient
 from yaml import SafeLoader, load
 
 from . import adaptors, log
-from .exceptions import WAGOError, WAGOUserWarning
+from .exceptions import DriftError, DriftUserWarning
 
 
-__ALL__ = ['Device', 'Relay', 'Module', 'MODULES', 'WAGO']
+__ALL__ = ['Device', 'Relay', 'Module', 'MODULES', 'Drift']
 
 
 MODULES = {
@@ -86,13 +86,13 @@ class Module(object):
     ----------
     name : str
         A name to be associated with this module.
-    wago : .WAGO
-        The instance of `.WAGO` used to communicate with the modbus network.
+    drift : .Drift
+        The instance of `.Drift` used to communicate with the modbus network.
     address : int
         The initial address associated with this module. In modbus, addresses
         start at 40001.
     model : str
-        The WAGO model for this module.
+        The Drift model for this module.
     mode : str
         Whether this is an ``input`` or ``output`` module. If not provided it
         will be determined from ``model``.
@@ -104,11 +104,11 @@ class Module(object):
 
     """
 
-    def __init__(self, name, wago, address, model=None, mode=None,
+    def __init__(self, name, drift, address, model=None, mode=None,
                  channels=None, description=''):
 
         self.name = name
-        self.wago = wago
+        self.drift = drift
         self.address = address
 
         self.description = description
@@ -120,7 +120,7 @@ class Module(object):
                 default_mode = MODULES[self.model]['mode']
                 default_channels = MODULES[self.model]['channels']
             else:
-                raise WAGOError(f'Unknown model {self.model!r}')
+                raise DriftError(f'Unknown model {self.model!r}')
         else:
             default_mode = None
             default_channels = None
@@ -130,24 +130,24 @@ class Module(object):
             if default_mode and default_mode != self.mode:
                 warnings.warn(f'mode {self.mode!r} is different from '
                               f'default mode {default_mode!r} for model '
-                              f'{self.model},', WAGOUserWarning)
+                              f'{self.model},', DriftUserWarning)
         else:
             if default_mode is None:
-                raise WAGOError('Cannot determine module mode.')
+                raise DriftError('Cannot determine module mode.')
             self.mode = default_mode
 
         if self.mode not in ['input', 'output']:
-            raise WAGOError(f'Invalid mode {mode}.')
+            raise DriftError(f'Invalid mode {mode}.')
 
         if channels is not None:
             self.channels = channels
             if default_channels and default_channels != self.channels:
                 warnings.warn(f'channels {self.channels!r} is different from '
                               f'default channels {default_channels!r} for '
-                              f'model {self.model},', WAGOUserWarning)
+                              f'model {self.model},', DriftUserWarning)
         else:
             if default_channels is None:
-                raise WAGOError('Cannot determine module channels.')
+                raise DriftError('Cannot determine module channels.')
             self.channels = default_channels
 
         self.devices = CaseInsensitiveDict()
@@ -192,8 +192,8 @@ class Module(object):
             device_class = device_class or Device
 
             if name in self.devices:
-                raise WAGOError(f'Device {name!r} already exists in '
-                                f'module {self.name!r}.')
+                raise DriftError(f'Device {name!r} already exists in '
+                                 f'module {self.name!r}.')
 
             device = device_class(self, name, channel, **kwargs)
 
@@ -287,13 +287,13 @@ class Device(object):
                 try:
                     module_str, adaptor = adaptor.split(':')
                 except ValueError:
-                    raise WAGOError(f'Badly formatted adaptor {adaptor}.')
+                    raise DriftError(f'Badly formatted adaptor {adaptor}.')
                 module = importlib.import_module(module_str)
             else:
                 module = adaptors
 
             if hasattr(module, adaptor) is False:
-                raise WAGOError(f'Cannot find adaptor {adaptor}.')
+                raise DriftError(f'Cannot find adaptor {adaptor}.')
             else:
                 return getattr(module, adaptor)
 
@@ -310,7 +310,7 @@ class Device(object):
     def client(self):
         """Returns the ``pymodbus`` client."""
 
-        return self.module.wago.client
+        return self.module.drift.client
 
     async def read(self, adapt=True):
         """Reads the value of the coil or register.
@@ -328,7 +328,7 @@ class Device(object):
 
         """
 
-        async with self.module.wago:
+        async with self.module.drift:
 
             protocol = self.client.protocol
 
@@ -340,8 +340,8 @@ class Device(object):
             resp = await reader(self.address, count=1)
 
             if resp.function_code > 0x80:
-                raise WAGOError(f'Invalid response for device '
-                                f'{self.name!r}: 0x{resp.function_code:02X}.')
+                raise DriftError(f'Invalid response for device '
+                                 f'{self.name!r}: 0x{resp.function_code:02X}.')
 
             value = resp.registers[0] if not self.coils else resp.bits[0]
 
@@ -353,8 +353,8 @@ class Device(object):
                     value = self.adaptor(value)
                 else:
                     if value not in self.adaptor:
-                        raise WAGOError(f'Cannot find associated value for '
-                                        f'{value} in adaptor mapping.')
+                        raise DriftError(f'Cannot find associated value for '
+                                         f'{value} in adaptor mapping.')
                     else:
                         value = self.adaptor[value]
 
@@ -369,9 +369,9 @@ class Device(object):
         """Writes values to a coil or register."""
 
         if self.module.mode != 'output':
-            raise WAGOError('Writing is not allowed to this module.')
+            raise DriftError('Writing is not allowed to this module.')
 
-        async with self.module.wago:
+        async with self.module.drift:
 
             protocol = self.client.protocol
 
@@ -381,8 +381,8 @@ class Device(object):
                 resp = await protocol.write_register(self.address, value)
 
             if resp.function_code > 0x80:
-                raise WAGOError(f'Invalid response for device {self.name!r}: '
-                                f'0x{resp.function_code:02X}.')
+                raise DriftError(f'Invalid response for device {self.name!r}: '
+                                 f'0x{resp.function_code:02X}.')
 
         return True
 
@@ -443,29 +443,30 @@ class Relay(Device):
         await self.switch()
 
 
-class WAGO(object):
-    """Controls a WAGO PLC using a Modbus interface.
+class Drift(object):
+    """Interface to the modbus network.
 
     Parameters
     ----------
     address : str
-        The IP of the WAGO PLC server.
+        The IP of the TCP modbus server.
     port : int
-        The port of the WAGO PLC server.
+        The port of the TCP modbus server.
     loop
         The event loop to use.
 
 
-    The `.WAGO` manages the TCP connection to the WAGO ethernet module using
-    `Pymodbus <pymodbus.readthedocs.io/en/latest/index.html>`__. The
+    The `.Drift` manages the TCP connection to the modbus ethernet module
+    using `Pymodbus <pymodbus.readthedocs.io/en/latest/index.html>`__. The
     :class:`~pymodbus.client.asynchronous.asyncio.AsyncioModbusTcpClient`
-    object can be accessed as ``WAGO.client``.
+    object can be accessed as ``Drift.client``.
 
     In general the connection is opened and closed using the a context
     manager ::
 
-        async with wago:
-            coil = wago.client.protocol.read_coils(40001, count=1)
+        drift = Drift('localhost')
+        async with drift:
+            coil = drift.client.protocol.read_coils(40001, count=1)
 
     This is not needed when using `.Device.read` or `.Device.write`, which
     handle the connection to the server.
@@ -482,25 +483,25 @@ class WAGO(object):
         self.modules = CaseInsensitiveDict()
 
     def __repr__(self):
-        return f'<WAGO @ {self.address}>'
+        return f'<Drift @ {self.address}>'
 
     async def __aenter__(self):
-        """Initialises the connection to the WAGO server."""
+        """Initialises the connection to the server."""
 
         try:
             await asyncio.wait_for(self.client.connect(), timeout=1)
         except asyncio.TimeoutError:
-            raise WAGOError(f'Failed connecting to WAGO at {self.address}.')
+            raise DriftError(f'Failed connecting to server at {self.address}.')
 
         if not self.client.connected:
-            raise WAGOError(f'Failed connecting to WAGO at {self.address}.')
+            raise DriftError(f'Failed connecting to server at {self.address}.')
 
         log.debug(f'Connected to {self.address}.')
 
         return
 
     async def __aexit__(self, exc_type, exc, tb):
-        """Closes the connection to the WAGO server."""
+        """Closes the connection to the server."""
 
         self.client.stop()
 
@@ -610,7 +611,7 @@ class WAGO(object):
 
     @classmethod
     def from_config(cls, config):
-        """Loads a WAGO from a dictionary or YAML file.
+        """Loads a Drift from a dictionary or YAML file.
 
         Parameters
         ----------
@@ -627,14 +628,14 @@ class WAGO(object):
         address = config['address']
         port = config.get('port', 502)
 
-        new_wago = cls(address, port)
+        new_drift = cls(address, port)
 
         for module in config.get('modules', {}):
 
             module_config = config['modules'][module]
             devices = module_config.pop('devices', {})
 
-            new_wago.add_module(module, **module_config)
+            new_drift.add_module(module, **module_config)
 
             for device in devices:
 
@@ -652,11 +653,11 @@ class WAGO(object):
                     device_class = Device
 
                 if device_class is None:
-                    raise WAGOError('Cannot find valid device class for '
-                                    f'type {type_}.')
+                    raise DriftError('Cannot find valid device class for '
+                                     f'type {type_}.')
 
-                new_wago.modules[module].add_device(device, channel,
-                                                    device_class,
-                                                    **device_config)
+                new_drift.modules[module].add_device(device, channel,
+                                                     device_class,
+                                                     **device_config)
 
-        return new_wago
+        return new_drift

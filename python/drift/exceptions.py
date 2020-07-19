@@ -9,19 +9,19 @@
 # @Last Modified time: 2017-12-05 12:19:32
 
 
-class WAGOError(Exception):
+class DriftError(Exception):
     """A custom core Wago exception"""
 
     def __init__(self, message=None):
 
         message = 'There has been an error.' if not message else message
 
-        super(WAGOError, self).__init__(message)
+        super(DriftError, self).__init__(message)
 
 
-class WAGOWarning(Warning):
+class DriftWarning(Warning):
     """Base warning for WAGO."""
 
 
-class WAGOUserWarning(UserWarning, WAGOWarning):
+class DriftUserWarning(UserWarning, DriftWarning):
     """The primary warning class."""

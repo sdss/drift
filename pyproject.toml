@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "sdss-wago"
+name = "sdss-drift"
 version = "0.1.0-alpha.0"
-description = "WAGO PLC library"
+description = "Modbus PLC control library"
 authors = ["José Sánchez-Gallego <gallegoj@uw.edu>"]
 license = "BSD-3-Clause"
 readme = "README.md"
-homepage = "https://github.com/sdss/wago"
-repository = "https://github.com/sdss/wago"
-documentation = "https://sdss-wago.readthedocs.org"
+homepage = "https://github.com/sdss/drift"
+repository = "https://github.com/sdss/drift"
+documentation = "https://sdss-drift.readthedocs.org"
 keywords = ["astronomy", "software"]
 classifiers = [
     "Intended Audience :: Science/Research",
@@ -20,7 +20,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
 packages = [
-    { include = "wago", from = "python" }
+    { include = "drift", from = "python" }
 ]
 include = ["LICENSE.md"]
 
@@ -54,7 +54,7 @@ docs = ["Sphinx"]
 line_length = 79
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "SDSS", "FIRSTPARTY", "LOCALFOLDER"]
 default_section = "THIRDPARTY"
-known_first_party = "wago"
+known_first_party = "drift"
 known_sdss_party = ["sdsstools"]
 balanced_wrapping = true
 include_trailing_comma = false
@@ -63,7 +63,7 @@ use_parentheses = true
 
 [tool.coverage.run]
 branch = true
-include = ["python/wago/*"]
+include = ["python/drift/*"]
 omit = [
     "*/__init__.py",
     "*/exceptions.py"

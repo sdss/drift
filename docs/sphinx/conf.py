@@ -16,10 +16,10 @@ import os
 from pkg_resources import parse_version
 
 try:
-    from wago import __version__
+    from drift import __version__
 except ModuleNotFoundError:
     from sdsstools import get_package_version
-    __version__ = get_package_version(__file__, 'sdss-wago') or 'dev'
+    __version__ = get_package_version(__file__, 'sdss-drift') or 'dev'
 
 
 # Are we building in RTD?
@@ -68,7 +68,7 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # General information about the project.
-project = 'wago'
+project = 'drift'
 copyright = '{0}, {1}'.format('2020', 'José Sánchez-Gallego')
 author = 'José Sánchez-Gallego'
 
@@ -133,7 +133,7 @@ napoleon_use_ivar = True
 rst_epilog = f"""
 .. |numpy_array| replace:: Numpy array
 .. |HDUList| replace:: :class:`~astropy.io.fits.HDUList`
-.. |wago_version| replace:: {__version__}
+.. |drift_version| replace:: {__version__}
 """
 
 
@@ -268,7 +268,7 @@ else:
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = '{0}pdoc'.format('wago')
+htmlhelp_basename = '{0}pdoc'.format('drift')
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -304,7 +304,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'wago', u'{0} Documentation'.format(project),
+    (master_doc, 'drift', u'{0} Documentation'.format(project),
      [author], 1)
 ]
 
@@ -323,6 +323,6 @@ if use_releases == 'yes':
 
     extensions += ['sdsstools.releases']
 
-    releases_github_path = 'sdss/wago'
+    releases_github_path = 'sdss/drift'
     releases_document_name = ['CHANGELOG']
     releases_unstable_prehistory = True

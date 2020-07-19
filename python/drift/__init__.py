@@ -4,7 +4,7 @@
 from sdsstools import get_logger, get_package_version
 
 # pip package name
-NAME = 'sdss-wago'
+NAME = 'sdss-drift'
 
 
 log = get_logger(NAME)
@@ -18,4 +18,4 @@ __version__ = get_package_version(path=__file__,
                                   pep_440=True)
 
 
-from .wago import *
+from .drift import *

@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from wago import WAGO, Relay
+from drift import Drift, Relay
 
 
 if sys.version_info.major < 3:
@@ -52,23 +52,23 @@ async def write_mocker(state, address, value):
 
 
 @pytest.fixture
-def wago():
-    """A fixture for a mocked WAGO."""
+def drift():
+    """A fixture for a mocked Drift."""
 
-    wago_instance = WAGO('localhost')
+    drift_instance = Drift('localhost')
 
-    wago_instance._state = {}
-    state = wago_instance._state
+    drift_instance._state = {}
+    state = drift_instance._state
 
-    wago_instance.client.connect = AsyncMock()
-    wago_instance.client.close = AsyncMock()
-    wago_instance.client.connected = True
+    drift_instance.client.connect = AsyncMock()
+    drift_instance.client.close = AsyncMock()
+    drift_instance.client.connected = True
 
     # Make protocol a mock. Since we are also mocking connect, the protocol
     # never changes and remains a mock.
-    wago_instance.client.protocol = AsyncMock()
+    drift_instance.client.protocol = AsyncMock()
 
-    protocol = wago_instance.client.protocol
+    protocol = drift_instance.client.protocol
 
     protocol.read_input_registers = MagicMock(side_effect=partial(read_mocker,
                                                                   state,
@@ -81,20 +81,20 @@ def wago():
     protocol.write_register = MagicMock(side_effect=partial(write_mocker,
                                                             state))
 
-    yield wago_instance
+    yield drift_instance
 
 
 @pytest.fixture
-def default_wago(wago):
-    """A WAGO with some default devices connected."""
+def default_drift(drift):
+    """A Drift with some default devices connected."""
 
-    module1 = wago.add_module('module1', 40001, mode='input', channels=4)
+    module1 = drift.add_module('module1', 40001, mode='input', channels=4)
     module1.add_device('temp1', 0, adaptor='ee_temp')
 
-    module2 = wago.add_module('module2', 40101, mode='output', channels=4)
+    module2 = drift.add_module('module2', 40101, mode='output', channels=4)
     module2.add_device('relay1', 0, device_class=Relay, category='relay')
 
-    wago._state[40001] = 100
-    wago._state[40101] = False
+    drift._state[40001] = 100
+    drift._state[40101] = False
 
-    yield wago
+    yield drift

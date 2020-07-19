@@ -6,7 +6,7 @@
 # @Filename: test_adaptors.py
 # @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
 
-from wago import adaptors
+from drift import adaptors
 
 
 def test_ee_temp():

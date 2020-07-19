@@ -1,4 +1,4 @@
-.. _wago-changelog:
+.. _drift-changelog:
 
 ==========
 Change Log
