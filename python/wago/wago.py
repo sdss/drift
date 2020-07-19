@@ -101,13 +101,11 @@ class Module(object):
         determined from ``model``.
     description : str
         A description or comment for this module.
-    devices : list
-        A list of devices to add to this module.
 
     """
 
     def __init__(self, name, wago, address, model=None, mode=None,
-                 channels=None, description='', devices=[]):
+                 channels=None, description=''):
 
         self.name = name
         self.wago = wago
@@ -149,8 +147,7 @@ class Module(object):
                 raise WAGOError('Cannot determine module channels.')
             self.channels = default_channels
 
-        self.devices = CaseInsensitiveDict({device.name: device
-                                            for device in devices})
+        self.devices = CaseInsensitiveDict()
 
         log.info(f'Created module {self.name}@{self.address} with '
                  f'mode {self.mode} and {self.channels} channels.')
