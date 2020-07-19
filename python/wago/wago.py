@@ -498,12 +498,6 @@ class WAGO(object):
 
         return self.get_device(name)
 
-    @property
-    def connected(self):
-        """Returns `True` if the client is connected."""
-
-        return self.client.connected
-
     def add_module(self, name, address, **params):
         """Adds a new module.
 
