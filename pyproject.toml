@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sdss-drift"
-version = "0.1.0-alpha.0"
+version = "0.1.0"
 description = "Modbus PLC control library"
 authors = ["José Sánchez-Gallego <gallegoj@uw.edu>"]
 license = "BSD-3-Clause"
@@ -13,7 +13,6 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-	"Programming Language :: Python :: 3.6",
 	"Programming Language :: Python :: 3.7",
 	"Programming Language :: Python :: 3.8",
     "Topic :: Documentation :: Sphinx",
