@@ -56,9 +56,8 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pip install pytest
+        pip install pytest pytest-cov pytest-asyncio pytest-mock
         pip install coverage[toml]
-        pip install pytest-cov
         pip install asyncmock
         pytest
 
