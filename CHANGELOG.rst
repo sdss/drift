@@ -5,6 +5,7 @@ Change Log
 ==========
 
 * :support:`-` Updated release workflow.
+* :support:`-` Expose exceptions.
 
 * :release:`0.1.0 <2020-07-19>`
 * :support:`-` Initial version, based on ``jaeger``'s code.
