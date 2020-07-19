@@ -2,7 +2,7 @@
 
 ![Versions](https://img.shields.io/badge/python->3.7-blue)
 [![Documentation Status](https://readthedocs.org/projects/sdss-wago/badge/?version=latest)](https://sdss-wago.readthedocs.io/en/latest/?badge=latest)
-![Build](https://github.com/sdss/WAGO/workflows/Build/badge.svg)
+![Build](https://img.shields.io/github/workflow/status/sdss/wago/Build)
 [![codecov](https://codecov.io/gh/sdss/wago/branch/master/graph/badge.svg)](https://codecov.io/gh/sdss/wago)
 
 This library provides an interface with the WAGO ethernet controller (such as [this one](https://www.wago.com/us/controllers-bus-couplers-i-o/controller-modbus-tcp/p/750-862)) and control of the connected I/O modules. The code is a relatively thin wrapper around [Pymodbus](http://riptideio.github.io/pymodbus/) with the main feature being that it's possible to define a PLC controller and a complete set of modules as a YAML configuration file which can then be loaded. It also provides convenience methods to read and write to the I/O modules and to convert the read values to physical units.
