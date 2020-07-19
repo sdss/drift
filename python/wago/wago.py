@@ -156,6 +156,11 @@ class Module(object):
         return (f'<Module {self.name}@{self.address} (mode={self.mode!r}, '
                 f'channels={self.channels}, n_devices={len(self.devices)})>')
 
+    def __getitem__(self, name):
+        """Gets a device."""
+
+        return self.devices[name]
+
     def add_device(self, name, channel, device_class=None, **kwargs):
         """Adds a device
 
@@ -491,9 +496,9 @@ class WAGO(object):
         return
 
     def __getitem__(self, name):
-        """Gets a device."""
+        """Gets a module."""
 
-        return self.get_device(name)
+        return self.modules[name]
 
     def add_module(self, name, address, **params):
         """Adds a new module.
