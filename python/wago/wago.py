@@ -583,7 +583,7 @@ class WAGO(object):
 
         for module in self.modules:
             for device in self.modules[module].devices.values():
-                name = f'{module}.{device.name}'
+                name = f'{module}.{device.name.lower()}'
                 if device.category and device.category.lower() == category:
                     values[name] = await device.read(adapt=adapt)
 
