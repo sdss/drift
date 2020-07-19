@@ -540,7 +540,7 @@ class WAGO(object):
             raise ValueError(f'Device {device} is not connected.')
 
         elif len(dev_to_mod[device]) == 1:
-            return self.modules[dev_to_mod[device.lower()]].devices[device]
+            return self.modules[dev_to_mod[device.lower()][0]].devices[device]
 
         else:
             raise ValueError(f'Multiple devices with name {device} found. '
