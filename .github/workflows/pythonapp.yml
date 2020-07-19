@@ -60,7 +60,7 @@ jobs:
         pip install coverage[toml]
         pip install pytest-cov
         pip install asyncmock
-        pytest --cov wago --cov-report xml -W ignore
+        pytest
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
