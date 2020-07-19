@@ -10,7 +10,7 @@
 
 
 class DriftError(Exception):
-    """A custom core Wago exception"""
+    """A custom core drift exception"""
 
     def __init__(self, message=None):
 
@@ -20,7 +20,7 @@ class DriftError(Exception):
 
 
 class DriftWarning(Warning):
-    """Base warning for WAGO."""
+    """Base warning for drift."""
 
 
 class DriftUserWarning(UserWarning, DriftWarning):
