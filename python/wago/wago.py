@@ -115,9 +115,12 @@ class Module(object):
 
         self.model = model
 
-        if self.model and self.model in MODULES:
-            default_mode = MODULES[self.model]['mode']
-            default_channels = MODULES[self.model]['channels']
+        if self.model:
+            if self.model in MODULES:
+                default_mode = MODULES[self.model]['mode']
+                default_channels = MODULES[self.model]['channels']
+            else:
+                raise WAGOError(f'Unknown model {self.model!r}')
         else:
             default_mode = None
             default_channels = None

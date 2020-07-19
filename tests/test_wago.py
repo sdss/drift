@@ -188,3 +188,9 @@ async def test_custom_adaptor(default_wago):
 
     assert await device2.read(adapt=False) == 5
     assert (await device2.read()) == (100, 'degF')
+
+
+async def test_invalid_model(wago):
+
+    with pytest.raises(WAGOError):
+        wago.add_module('unknown_module', 42000, model='bad_model')
