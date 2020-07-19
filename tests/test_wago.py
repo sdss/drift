@@ -69,6 +69,14 @@ async def test_add_known_module(wago):
     assert wago['module'].mode == 'input'
 
 
+async def test_remove_devicw(default_wago):
+
+    assert default_wago['module1'].remove_device('temp1') is not None
+
+    with pytest.raises(ValueError):
+        default_wago.get_device('temp1')
+
+
 async def test_from_config(tmp_path):
 
     config_path = tmp_path / 'test_config.yaml'
