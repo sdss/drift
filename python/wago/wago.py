@@ -469,9 +469,6 @@ class WAGO(object):
     async def __aenter__(self):
         """Initialises the connection to the WAGO server."""
 
-        if self.client.connected:
-            return
-
         try:
             await asyncio.wait_for(self.client.connect(), timeout=1)
         except asyncio.TimeoutError:
