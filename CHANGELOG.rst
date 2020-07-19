@@ -4,5 +4,6 @@
 Change Log
 ==========
 
-* First change goes here.
-
+* :support:`-` Initial version, based on ``jaeger``'s code.
+* :support:`-` Added testing suite.
+* :support:`-` Added documentation.

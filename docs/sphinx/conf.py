@@ -122,8 +122,7 @@ todo_include_todos = False
 
 # Intersphinx mappings
 intersphinx_mapping = {'python': ('https://docs.python.org/3.6', None),
-                       'astropy': ('http://docs.astropy.org/en/latest', None),
-                       'numpy': ('http://docs.scipy.org/doc/numpy/', None)}
+                       'pymodbus': ('https://pymodbus.readthedocs.io/en/latest', None)}
 
 autodoc_mock_imports = ['_tkinter']
 autodoc_member_order = 'groupwise'
@@ -177,7 +176,7 @@ if sphinx_template == 'sphinx-bootstrap':
         'navbar_sidebarrel': False,
 
         # Render the current pages TOC in the navbar. (Default: true)
-        'navbar_pagenav': False,
+        'navbar_pagenav': True,
 
         # Tab name for the current pages TOC. (Default: "Page")
         'navbar_pagenav_name': "Page",
@@ -237,14 +236,15 @@ elif sphinx_template == 'alabaster':
         'github_repo': project,
         'github_button': True,
         'github_type': 'star',
-        'sidebar_collapse': True,
+        'sidebar_collapse': False,
+        'sidebar_includehidden': False,
         'page_width': '80%'
     }
 
     html_sidebars = {
         '**': [
             'about.html',
-            'navigation.html',
+            'localtoc.html',
             'relations.html',
             'searchbox.html',
         ]

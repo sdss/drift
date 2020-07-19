@@ -455,10 +455,11 @@ class WAGO(object):
     loop
         The event loop to use.
 
+
     The `.WAGO` manages the TCP connection to the WAGO ethernet module using
     `Pymodbus <pymodbus.readthedocs.io/en/latest/index.html>`__. The
-    :class:`pymodbus:AsyncioModbusTcpClient` object can be accessed as
-    ``WAGO.client``.
+    :class:`~pymodbus.client.asynchronous.asyncio.AsyncioModbusTcpClient`
+    object can be accessed as ``WAGO.client``.
 
     In general the connection is opened and closed using the a context
     manager ::

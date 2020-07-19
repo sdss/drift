@@ -42,11 +42,6 @@ def rtd(raw_value):
     is -273C to +850C. The 16-bit digital number wraps below 0C to
     2^16-1 ADU. This handles that conversion.
 
-    Parameters
-    ----------
-    raw_value : int
-        The register raw value from the sensor.
-
     """
 
     tempRes = 0.1                  # Module resolution is 0.1C per ADU
