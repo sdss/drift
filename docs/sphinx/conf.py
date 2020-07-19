@@ -9,6 +9,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+# isort:skip_file
+
 import os
 
 from pkg_resources import parse_version

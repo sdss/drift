@@ -1,4 +1,5 @@
 # encoding: utf-8
+# isort:skip_file
 
 from sdsstools import get_logger, get_package_version
 
