@@ -14,6 +14,22 @@ from wago import WAGO
 pytestmark = pytest.mark.asyncio
 
 
+config = """
+address: 10.1.10.1
+port: 502
+modules:
+    module1:
+        model: "750-530"
+        address: 40513
+        devices:
+            "relay1":
+                channel: 0
+                type: relay
+                relay_type: "NO"
+
+"""
+
+
 async def test_wago(default_wago):
 
     assert isinstance(default_wago, WAGO)
@@ -51,3 +67,14 @@ async def test_add_known_module(wago):
 
     assert wago['module'].channels == 8
     assert wago['module'].mode == 'input'
+
+
+async def test_from_config(tmp_path):
+
+    config_path = tmp_path / 'test_config.yaml'
+    config_path.write_text(config)
+
+    wago = WAGO.from_config(str(config_path))
+
+    assert 'module1' in wago.modules
+    assert wago.get_device('relay1').relay_type == 'NO'
