@@ -16,7 +16,7 @@ Overview
 
 This library provides an asynchronous interface with modbus devices over a TCP ethernet controller (such as `this one <https://www.drift.com/us/controllers-bus-couplers-i-o/controller-modbus-tcp/p/750-862>`__) and control of the connected I/O modules. The code is a relatively thin wrapper around `Pymodbus <http://riptideio.github.io/pymodbus/>`__ with the main feature being that it's possible to define a PLC controller and a complete set of modules as a YAML configuration file which can then be loaded. It also provides convenience methods to read and write to the I/O modules and to convert the read values to physical units.
 
-This code is mostly intended to interface with the SDSS-V `FPS <https://www.sdss.org/future/technology/>`__ electronic boxes but is probably general enough for other uses. It's originally based on Rick Pogge's `Drift code <https://github.com/sdss/FPS/tree/master/Drift>`__.
+This code is mostly intended to interface with the SDSS-V `FPS <https://www.sdss.org/future/technology/>`__ electronic boxes but is probably general enough for other uses. It's originally based on Rick Pogge's `WAGO code <https://github.com/sdss/FPS/tree/master/WAGO>`__.
 
 
 Installation
