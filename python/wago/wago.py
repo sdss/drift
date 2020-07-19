@@ -124,7 +124,7 @@ class Module(object):
 
         if mode is not None:
             self.mode = mode
-            if default_mode != self.mode:
+            if default_mode and default_mode != self.mode:
                 warnings.warn(f'mode {self.mode!r} is different from '
                               f'default mode {default_mode!r} for model '
                               f'{self.model},', WAGOUserWarning)
@@ -138,7 +138,7 @@ class Module(object):
 
         if channels is not None:
             self.channels = channels
-            if default_channels != self.channels:
+            if default_channels and default_channels != self.channels:
                 warnings.warn(f'channels {self.channels!r} is different from '
                               f'default channels {default_channels!r} for '
                               f'model {self.model},', WAGOUserWarning)
