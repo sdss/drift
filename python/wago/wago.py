@@ -186,6 +186,8 @@ class Module(object):
 
         log.info(f'Added device {name} to module {self.name}.')
 
+        return self.devices[name]
+
     def remove_device(self, name):
         """Removes a device.
 
@@ -514,6 +516,8 @@ class WAGO(object):
             raise ValueError(f'Module {name} is already connected.')
 
         self.modules[name] = Module(name, self, address, **params)
+
+        return self.modules[name]
 
     def get_device(self, device):
         """Gets the `.Module` instance that matches ``device``.
