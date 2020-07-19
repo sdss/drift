@@ -18,4 +18,5 @@ __version__ = get_package_version(path=__file__,
                                   pep_440=True)
 
 
+from .exceptions import *
 from .drift import *
