@@ -164,13 +164,15 @@ class Module(object):
 
         return self.devices[name]
 
-    def add_device(self, name, channel, device_class=None, **kwargs):
+    def add_device(self, name, channel=None, device_class=None, **kwargs):
         """Adds a device
 
         Parameters
         ----------
-        name : str
-            The name of the device. It is treated as case-insensitive.
+        name : str or .Device
+            The name of the device. It is treated as case-insensitive. It can
+            also be a `.Device` instance, in which case the remaining
+            parameters will be ignored.
         channel : int
             The channel of the device in the module (relative to the
             module address), zero-indexed.
@@ -181,17 +183,24 @@ class Module(object):
 
         """
 
-        device_class = device_class or Device
+        if isinstance(name, Device):
 
-        if name in self.devices:
-            raise WAGOError(f'Device {name!r} already exists in '
-                            f'module {self.name!r}.')
+            device = name
 
-        self.devices[name] = device_class(self, name, channel, **kwargs)
+        else:
 
-        log.info(f'Added device {name} to module {self.name}.')
+            device_class = device_class or Device
 
-        return self.devices[name]
+            if name in self.devices:
+                raise WAGOError(f'Device {name!r} already exists in '
+                                f'module {self.name!r}.')
+
+            device = device_class(self, name, channel, **kwargs)
+
+        self.devices[device.name] = device
+        log.info(f'Added device {device.name} to module {self.name}.')
+
+        return device
 
     def remove_device(self, name):
         """Removes a device.

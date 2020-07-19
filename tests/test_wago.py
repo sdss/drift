@@ -10,6 +10,7 @@ import types
 from unittest.mock import patch
 
 import pytest
+from wago.exceptions import WAGOError
 from yaml import SafeLoader, load
 
 from wago import WAGO, Relay
@@ -194,3 +195,12 @@ async def test_invalid_model(wago):
 
     with pytest.raises(WAGOError):
         wago.add_module('unknown_module', 42000, model='bad_model')
+
+
+async def test_add_device(default_wago):
+
+    module2 = default_wago['module2']
+    relay = Relay(module2, 'relay2', 3, relay_type='NO')
+    module2.add_device(relay)
+
+    assert default_wago.get_device('relay2').relay_type == 'NO'
