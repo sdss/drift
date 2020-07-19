@@ -65,10 +65,13 @@ branch = true
 include = ["python/wago/*"]
 omit = [
     "*/__init__.py",
+    "*/exceptions.py"
 ]
 
 [tool.coverage.report]
 exclude_lines = [
+    "class CaseInsensitiveDict",
+    "def __repr__"
 ]
 
 [build-system]
