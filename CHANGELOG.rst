@@ -4,6 +4,9 @@
 Change Log
 ==========
 
+* :release:`0.1.2 <2020-07-29>`
+* :support:`-` Relax ``sdsstools`` version to allow ``jaeger`` to bump the minimum version.
+
 * :release:`0.1.1 <2020-07-19>`
 * :support:`-` Updated release workflow.
 * :support:`-` Expose exceptions.
