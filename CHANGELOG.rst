@@ -4,6 +4,8 @@
 Change Log
 ==========
 
+* :bug:`-` Fix `.Drift.get_device` not working for case-insensitive devices.
+
 * :release:`0.1.2 <2020-07-29>`
 * :support:`-` Relax ``sdsstools`` version to allow ``jaeger`` to bump the minimum version.
 

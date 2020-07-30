@@ -549,6 +549,8 @@ class Drift(object):
             module, device = device.split('.')
             return self.modules[module].devices[device]
 
+        device = device.lower()
+
         dev_to_mod = defaultdict(list)
         for module in self.modules:
             for dev in self.modules[module].devices:

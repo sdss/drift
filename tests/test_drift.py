@@ -10,10 +10,10 @@ import types
 from unittest.mock import patch
 
 import pytest
-from drift.exceptions import DriftError
 from yaml import SafeLoader, load
 
 from drift import Drift, Relay
+from drift.exceptions import DriftError
 
 from .conftest import AsyncMock, MagicMock
 
@@ -204,3 +204,8 @@ async def test_add_device(default_drift):
     module2.add_device(relay)
 
     assert default_drift.get_device('relay2').relay_type == 'NO'
+
+
+async def test_get_device_case_insensitive(default_drift):
+
+    assert default_drift.get_device('TEmP1') is not None
