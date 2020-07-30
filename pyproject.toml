@@ -26,25 +26,25 @@ include = ["LICENSE.md"]
 [tool.poetry.dependencies]
 python = "^3.7"
 sdsstools = {version=">=0.1.9", extras=["dev"]}
-Sphinx = {"version"="^2.2.0", optional=true}
+Sphinx = {"version"=">=2.2.0", optional=true}
 pymodbus = "^2.3.0"
 pyyaml = "^5.3.1"
 
 [tool.poetry.dev-dependencies]
-ipython = "^7.11.0"
-matplotlib = "^3.1.1"
-flake8 = "^3.7.9"
-doc8 = "^0.8.0"
-pytest = "^5.2.2"
-pytest-asyncio = "^0.10.0"
-pytest-cov = "^2.8.1"
-pytest-mock = "^1.13.0"
-pytest-sugar = "^0.9.2"
-isort = "^4.3.21"
-codecov = "^2.0.15"
-coverage = {version = "5.0", extras = ["toml"]}
-ipdb = "^0.12.3"
-asyncmock = "^0.4.2"
+ipython = ">=7.11.0"
+matplotlib = ">=3.1.1"
+flake8 = ">=3.7.9"
+doc8 = ">=0.8.0"
+pytest = ">=5.2.2"
+pytest-asyncio = ">=0.10.0"
+pytest-cov = ">=2.8.1"
+pytest-mock = ">=1.13.0"
+pytest-sugar = ">=0.9.2"
+isort = ">=4.3.21"
+codecov = ">=2.0.15"
+coverage = {version = ">=5.0", extras = ["toml"]}
+ipdb = ">=0.12.3"
+asyncmock = ">=0.4.2"
 
 [tool.poetry.extras]
 docs = ["Sphinx"]
