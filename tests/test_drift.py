@@ -61,6 +61,12 @@ async def test_drift_read(default_drift):
     assert units == 'degC'
 
 
+async def test_drift_read_device(default_drift):
+
+    assert await default_drift.read_device('temp1', adapt=False) == 100
+    assert await default_drift.read('temp1', adapt=False) == 100
+
+
 async def test_drift_write(default_drift):
 
     assert (await default_drift.get_device('relay1').read()) == ('closed', None)

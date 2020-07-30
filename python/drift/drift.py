@@ -583,6 +583,11 @@ class Drift(object):
 
         return await self.get_device(name).read(adapt=adapt)
 
+    async def read(self, *args, **kwargs):
+        """Alias for `.read_device`."""
+
+        return await self.read_device(*args, **kwargs)
+
     async def read_category(self, category, adapt=True):
         """Reads all the devices of a given category.
 
