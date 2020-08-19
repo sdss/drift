@@ -4,6 +4,9 @@
 Change Log
 ==========
 
+* :release:`0.1.4 <2020-08-19>`
+* :support:`-` Do not require extra ``dev`` for ``sdsstools``.
+
 * :release:`0.1.3 <2020-07-30>`
 * :feature:`-` Add `~.Drift.read` alias to `~.Drift.read_device`.
 * :bug:`-` Fix `.Drift.get_device` not working for case-insensitive devices.
