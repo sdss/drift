@@ -11,7 +11,7 @@ import importlib
 import warnings
 from collections import defaultdict
 
-from pymodbus.client.asynchronous.asyncio import AsyncioModbusTcpClient
+from pymodbus.client.asynchronous.async_io import AsyncioModbusTcpClient
 from yaml import SafeLoader, load
 
 from . import adaptors, log
@@ -458,7 +458,7 @@ class Drift(object):
 
     The `.Drift` manages the TCP connection to the modbus ethernet module
     using `Pymodbus <pymodbus.readthedocs.io/en/latest/index.html>`__. The
-    :class:`~pymodbus.client.asynchronous.asyncio.AsyncioModbusTcpClient`
+    :class:`~pymodbus.client.asynchronous.async_io.AsyncioModbusTcpClient`
     object can be accessed as ``Drift.client``.
 
     In general the connection is opened and closed using the a context
