@@ -4,6 +4,9 @@
 Change Log
 ==========
 
+* :release:`0.1.5 <2020-10-10>`
+* :bug:`3` Fix import of ``AsyncioModbusTcpClient`` when using ``pymodbus>=2.4.0``.
+
 * :release:`0.1.4 <2020-08-19>`
 * :support:`-` Do not require extra ``dev`` for ``sdsstools``.
 
