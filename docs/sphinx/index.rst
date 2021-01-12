@@ -57,7 +57,7 @@ Let's start with a basic example ::
 
 Here `.Drift` handles the connection to the modbus ethernet interface. `Modules <.Module>` represent physical analog or digital I/O components connected to the modbus network. We added a single analog input module with starting modbus address 40010 (note that in modbus addresses start with 40001) and four channels. Finally, we add a single `.Device` to the module, a temperature sensor connected to the first channel (zero-indexed).
 
-``drift`` is an asynchronous library that uses the Python standard library `asyncio`. Procedures that read or write from the modbus network are defined as coroutines so that the process can be handled asynchronously. This is shown in the fact that we need to **await** the call to `sensor1.read() <.Device.read>`.
+``drift`` is an asynchronous library that uses the Python standard library `asyncio`. Procedures that read or write from the modbus network are defined as coroutines so that the process can be handled asynchronously. This is shown in the fact that we need to *await* the call to `sensor1.read() <.Device.read>`.
 
 It's also possible to define a module by providing a product serial number ::
 
@@ -87,7 +87,7 @@ Note that we create this device with ``coils=True`` since we'll be reading from 
 Adaptors
 --------
 
-In our first example we created a new device with ``adaptor='ee_temp'``. Adaptors are simply functions that receive a raw value from a register or coil and return a tuple with the physical value and, optionally, the associated units. When `~Device.read` is awaited, the adaptor (if it has been defined) will be called with the raw value and the result returned ::
+In our first example we created a new device with ``adaptor='ee_temp'``. Adaptors are simply functions that receive a raw value from a register or coil and return a tuple with the physical value and, optionally, the associated units. When `~.Device.read` is awaited, the adaptor (if it has been defined) will be called with the raw value and the result returned ::
 
     >>> await sensor1.read()
     (25.0, 'degC')
