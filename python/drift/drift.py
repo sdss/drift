@@ -213,7 +213,7 @@ class Module(object):
 
             if name in self.devices:
                 raise DriftError(
-                    f"Device {name!r} already exists in " f"module {self.name!r}."
+                    f"Device {name!r} already exists in module {self.name!r}."
                 )
 
             assert channel is not None, "channel is not defined for the new device."
@@ -700,9 +700,7 @@ class Drift(object):
                     device_class = Device
 
                 if device_class is None:
-                    raise DriftError(
-                        "Cannot find valid device class for " f"type {type_}."
-                    )
+                    raise DriftError("Cannot find valid device class for type {type_}.")
 
                 new_drift.modules[module].add_device(
                     device, channel, device_class, **device_config

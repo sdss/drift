@@ -12,7 +12,7 @@ from unittest.mock import patch
 import pytest
 from yaml import SafeLoader, load
 
-from drift import Drift, Relay
+from drift import Drift, Relay, adaptors
 from drift.exceptions import DriftError
 
 from .conftest import AsyncMock, MagicMock
@@ -218,3 +218,12 @@ async def test_add_device(default_drift):
 async def test_get_device_case_insensitive(default_drift):
 
     assert default_drift.get_device("TEmP1") is not None
+
+
+async def test_adaptor_extra_params(default_drift):
+
+    dev = default_drift["module1"]["temp1"]
+    dev.adaptor = adaptors.voltage
+    dev._adaptor_extra_params = [0, 20, 10]
+
+    dev.read(adapt=True) == (200, "V")
