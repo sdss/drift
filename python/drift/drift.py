@@ -13,7 +13,7 @@ import importlib
 import warnings
 from collections import defaultdict
 
-from typing import Callable, Optional, Type, cast
+from typing import Any, Callable, Optional, Type, cast
 
 from pymodbus.client.asynchronous.async_io import AsyncioModbusTcpClient
 from yaml import SafeLoader, load
@@ -273,6 +273,9 @@ class Device(object):
         register value to return value. If the adaptor is a function it must
         accept a raw value from the register and return the physical value,
         or a tuple of ``(value, unit)``.
+    adaptor_extra_params
+        A tuple of extra parameters to be passed to the adaptor after the
+        raw value.
 
     """
 
@@ -288,6 +291,7 @@ class Device(object):
         units: Optional[str] = None,
         category: Optional[str] = None,
         adaptor: Optional[str | dict | Callable] = None,
+        adaptor_extra_params: tuple[Any] = tuple(),
     ):
 
         assert isinstance(module, Module), "module not a valid Module object."
@@ -300,6 +304,7 @@ class Device(object):
         self.units = units
         self.category = category
         self.adaptor = self._parse_adaptor(adaptor)
+        self._adaptor_extra_params = adaptor_extra_params
 
         log.info(f"Created device {self.name}@{self.module.address}:{self.channel}.")
 
@@ -384,7 +389,7 @@ class Device(object):
 
             if adapt and self.adaptor is not None:
                 if callable(self.adaptor):
-                    value = self.adaptor(value)
+                    value = self.adaptor(value, *self._adaptor_extra_params)
                 else:
                     if value not in self.adaptor:
                         raise DriftError(
