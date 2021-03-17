@@ -63,3 +63,13 @@ def rtd10(raw_value):
     """
 
     return (float(raw_value) / 10.0, "degC")
+
+
+def voltage(raw_value, v_min=0, v_max=30, res=32760):
+    """Converts a raw value to a voltage measurement.
+
+    ``V = raw / res * (v_max - v_min)
+
+    """
+
+    return (float(raw_value) / res * (v_max - v_min), "V")
