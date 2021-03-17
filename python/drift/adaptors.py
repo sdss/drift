@@ -6,11 +6,9 @@
 # @Filename: adaptors.py
 # @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
 
-from __future__ import annotations
 
-
-def ee_rh(raw_value: float) -> tuple[float, str]:
-    """Returns E+E sensor relative humidity (RH) from a raw register value.
+def rh_dwyer(raw_value):
+    """Returns Dwyer sensor relative humidity (RH) from a raw register value.
 
     Range is 0-100%.
 
@@ -23,8 +21,8 @@ def ee_rh(raw_value: float) -> tuple[float, str]:
     return (RH0 + RHs * float(raw_value), "percent")
 
 
-def ee_temp(raw_value: float) -> tuple[float, str]:
-    """Returns E+E sensor temperature from a raw register value.
+def t_dwyer(raw_value):
+    """Returns Dwyer sensor temperature from a raw register value.
 
     Range is -30C to +70C.
 
@@ -37,7 +35,7 @@ def ee_temp(raw_value: float) -> tuple[float, str]:
     return (T0 + Ts * float(raw_value), "degC")
 
 
-def rtd(raw_value: float) -> tuple[float, str]:
+def rtd(raw_value):
     """Converts platinum RTD (resistance thermometer) output to degrees C.
 
     The temperature resolution is 0.1C per ADU, and the temperature range
@@ -55,3 +53,13 @@ def rtd(raw_value: float) -> tuple[float, str]:
         temp -= wrapT
 
     return (temp, "degC")
+
+
+def rtd10(raw_value):
+    """Convert platinum RTD output to degrees C.
+
+    The conversion is simply ``0.1 * raw_value``.
+
+    """
+
+    return float(raw_value) / 10.0

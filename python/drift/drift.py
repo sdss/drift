@@ -484,17 +484,9 @@ class Relay(Device):
 class Drift(object):
     """Interface to the modbus network.
 
-    Parameters
-    ----------
-    address : str
-        The IP of the TCP modbus server.
-    port : int
-        The port of the TCP modbus server.
-
-    The `.Drift` manages the TCP connection to the modbus ethernet module
+    `.Drift` manages the TCP connection to the modbus ethernet module
     using `Pymodbus <pymodbus.readthedocs.io/en/latest/index.html>`__. The
-    :class:`~pymodbus.client.asynchronous.async_io.AsyncioModbusTcpClient`
-    object can be accessed as ``Drift.client``.
+    ``AsyncioModbusTcpClient`` object can be accessed as ``Drift.client``.
 
     In general the connection is opened and closed using the a context
     manager ::
@@ -505,6 +497,13 @@ class Drift(object):
 
     This is not needed when using `.Device.read` or `.Device.write`, which
     handle the connection to the server.
+
+    Parameters
+    ----------
+    address
+        The IP of the TCP modbus server.
+    port
+        The port of the TCP modbus server.
 
     """
 

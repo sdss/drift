@@ -161,12 +161,12 @@ Programmatically defining the modules and devices in an electronic design can be
                 "RTD1":
                     channel: 0
                     category: temperature
-                    adaptor: rtd
+                    adaptor: rtd10
                     units: degC
                 "RTD2":
                     channel: 1
                     category: temperature
-                    adaptor: rtd
+                    adaptor: rtd10
                     units: degC
         module_do:
             model: "750-530"
@@ -182,7 +182,7 @@ Programmatically defining the modules and devices in an electronic design can be
                 "5V":
                     channel: 1
                     type: relay
-                    relay_type: "NO"
+                    relay_type: NO
 
 Most parameters match the arguments of `.Drift`, `.Module`, and `.Device`. Note that for the two relays we indicate that ``type: relay`` which will result in using the `.Relay` class instead of the generic `.Device`.
 
