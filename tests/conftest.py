@@ -85,7 +85,7 @@ def default_drift(drift):
     """A Drift with some default devices connected."""
 
     module1 = drift.add_module("module1", 40001, mode="input", channels=4)
-    module1.add_device("temp1", 0, adaptor="ee_temp")
+    module1.add_device("temp1", 0, adaptor="t_dwyer")
 
     module2 = drift.add_module("module2", 40101, mode="output", channels=4)
     module2.add_device("relay1", 0, device_class=Relay, category="relay")

@@ -11,14 +11,14 @@ from drift import adaptors
 
 def test_ee_temp():
 
-    assert adaptors.ee_temp(0) == (-30, "degC")
-    assert adaptors.ee_temp(2 ** 15 - 1)[0] == 70
+    assert adaptors.t_dwyer(0) == (-30, "degC")
+    assert adaptors.t_dwyer(2 ** 15 - 1)[0] == 70
 
 
 def test_ee_rh():
 
-    assert adaptors.ee_rh(0) == (0, "percent")
-    assert adaptors.ee_rh(2 ** 15 - 1)[0] == 100
+    assert adaptors.rh_dwyer(0) == (0, "percent")
+    assert adaptors.rh_dwyer(2 ** 15 - 1)[0] == 100
 
 
 def test_rtd():
