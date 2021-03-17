@@ -62,4 +62,4 @@ def rtd10(raw_value):
 
     """
 
-    return float(raw_value) / 10.0
+    return (float(raw_value) / 10.0, "degC")
