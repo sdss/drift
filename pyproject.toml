@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sdss-drift"
-version = "0.1.5"
+version = "0.2.0-alpha.0"
 description = "Modbus PLC control library"
 authors = ["José Sánchez-Gallego <gallegoj@uw.edu>"]
 license = "BSD-3-Clause"
@@ -21,12 +21,10 @@ classifiers = [
 packages = [
     { include = "drift", from = "python" }
 ]
-include = ["LICENSE.md"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
 sdsstools = ">=0.4.1"
-Sphinx = {version=">=2.2.0", optional=true}
 pymodbus = "~2.4.0"
 pyyaml = "^5.3.1"
 
@@ -46,20 +44,22 @@ coverage = {version = ">=5.0", extras = ["toml"]}
 ipdb = ">=0.12.3"
 asyncmock = ">=0.4.2"
 rstcheck = "^3.3.1"
+Sphinx = "^3.5.2"
+black = {version = "^20.8b1", allow-prereleases = true}
 
-[tool.poetry.extras]
-docs = ["Sphinx"]
+[tool.black]
+line-length = 88
+target-version = ['py38']
+fast = true
 
 [tool.isort]
-line_length = 79
-sections = ["FUTURE", "STDLIB", "THIRDPARTY", "SDSS", "FIRSTPARTY", "LOCALFOLDER"]
+profile = "black"
+sections = ["FUTURE", "STDLIB", "TYPING", "THIRDPARTY", "SDSS", "FIRSTPARTY", "LOCALFOLDER"]
 default_section = "THIRDPARTY"
 known_first_party = "drift"
-known_sdss_party = ["sdsstools"]
-balanced_wrapping = true
-include_trailing_comma = false
+known_typing = ["typing"]
+known_sdss = ["sdsstools"]
 lines_after_imports = 2
-use_parentheses = true
 
 [tool.pytest.ini_options]
 addopts = "--cov drift --cov-report xml --cov-report html --cov-report term -W ignore"
@@ -79,5 +79,5 @@ exclude_lines = [
 ]
 
 [build-system]
-build-backend = "poetry.masonry.api"
-requires = ["poetry>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "setuptools>=49.6.0"]
+build-backend = "poetry.core.masonry.api"

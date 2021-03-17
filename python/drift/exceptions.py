@@ -14,7 +14,7 @@ class DriftError(Exception):
 
     def __init__(self, message=None):
 
-        message = 'There has been an error.' if not message else message
+        message = "There has been an error." if not message else message
 
         super(DriftError, self).__init__(message)
 

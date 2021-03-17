@@ -2,6 +2,7 @@
 
 ![Versions](https://img.shields.io/badge/python->3.7-blue)
 [![Documentation Status](https://readthedocs.org/projects/sdss-drift/badge/?version=latest)](https://sdss-drift.readthedocs.io/en/latest/?badge=latest)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Build](https://img.shields.io/github/workflow/status/sdss/drift/Test)
 [![codecov](https://codecov.io/gh/sdss/drift/branch/master/graph/badge.svg)](https://codecov.io/gh/sdss/drift)
 

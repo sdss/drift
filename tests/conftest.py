@@ -17,7 +17,7 @@ from drift import Drift, Relay
 
 
 if sys.version_info.major < 3:
-    raise ValueError('Python 2 is not supported.')
+    raise ValueError("Python 2 is not supported.")
 if sys.version_info.minor <= 7:
     from asyncmock import AsyncMock
 else:
@@ -55,13 +55,13 @@ async def write_mocker(state, address, value):
 def drift():
     """A fixture for a mocked Drift."""
 
-    drift_instance = Drift('localhost')
+    drift_instance = Drift("localhost")
 
-    drift_instance._state = {}
-    state = drift_instance._state
+    drift_instance._state = {}  # type: ignore
+    state = drift_instance._state  # type: ignore
 
-    drift_instance.client.connect = AsyncMock()
-    drift_instance.client.close = AsyncMock()
+    drift_instance.client.connect = AsyncMock()  # type: ignore
+    drift_instance.client.close = AsyncMock()  # type: ignore
     drift_instance.client.connected = True
 
     # Make protocol a mock. Since we are also mocking connect, the protocol
@@ -70,16 +70,12 @@ def drift():
 
     protocol = drift_instance.client.protocol
 
-    protocol.read_input_registers = MagicMock(side_effect=partial(read_mocker,
-                                                                  state,
-                                                                  coil=False))
-    protocol.read_coils = MagicMock(side_effect=partial(read_mocker,
-                                                        state,
-                                                        coil=True))
-    protocol.write_coil = MagicMock(side_effect=partial(write_mocker,
-                                                        state))
-    protocol.write_register = MagicMock(side_effect=partial(write_mocker,
-                                                            state))
+    protocol.read_input_registers = MagicMock(
+        side_effect=partial(read_mocker, state, coil=False)
+    )
+    protocol.read_coils = MagicMock(side_effect=partial(read_mocker, state, coil=True))
+    protocol.write_coil = MagicMock(side_effect=partial(write_mocker, state))
+    protocol.write_register = MagicMock(side_effect=partial(write_mocker, state))
 
     yield drift_instance
 
@@ -88,11 +84,11 @@ def drift():
 def default_drift(drift):
     """A Drift with some default devices connected."""
 
-    module1 = drift.add_module('module1', 40001, mode='input', channels=4)
-    module1.add_device('temp1', 0, adaptor='ee_temp')
+    module1 = drift.add_module("module1", 40001, mode="input", channels=4)
+    module1.add_device("temp1", 0, adaptor="ee_temp")
 
-    module2 = drift.add_module('module2', 40101, mode='output', channels=4)
-    module2.add_device('relay1', 0, device_class=Relay, category='relay')
+    module2 = drift.add_module("module2", 40101, mode="output", channels=4)
+    module2.add_device("relay1", 0, device_class=Relay, category="relay")
 
     drift._state[40001] = 100
     drift._state[40101] = False

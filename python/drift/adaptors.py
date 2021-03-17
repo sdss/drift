@@ -6,8 +6,10 @@
 # @Filename: adaptors.py
 # @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
 
+from __future__ import annotations
 
-def ee_rh(raw_value):
+
+def ee_rh(raw_value: float) -> tuple[float, str]:
     """Returns E+E sensor relative humidity (RH) from a raw register value.
 
     Range is 0-100%.
@@ -16,12 +18,12 @@ def ee_rh(raw_value):
 
     # Humidity linear calibration = 100 / (2^15 - 1)
     RH0 = 0.0
-    RHs = 100.0 / (2**15 - 1)
+    RHs = 100.0 / (2 ** 15 - 1)
 
-    return (RH0 + RHs * float(raw_value), 'percent')
+    return (RH0 + RHs * float(raw_value), "percent")
 
 
-def ee_temp(raw_value):
+def ee_temp(raw_value: float) -> tuple[float, str]:
     """Returns E+E sensor temperature from a raw register value.
 
     Range is -30C to +70C.
@@ -30,12 +32,12 @@ def ee_temp(raw_value):
 
     # Temperature linear calibration = 100 / (2^15 - 1)
     T0 = -30.0
-    Ts = 100.0 / (2**15 - 1)
+    Ts = 100.0 / (2 ** 15 - 1)
 
-    return (T0 + Ts * float(raw_value), 'degC')
+    return (T0 + Ts * float(raw_value), "degC")
 
 
-def rtd(raw_value):
+def rtd(raw_value: float) -> tuple[float, str]:
     """Converts platinum RTD (resistance thermometer) output to degrees C.
 
     The temperature resolution is 0.1C per ADU, and the temperature range
@@ -44,12 +46,12 @@ def rtd(raw_value):
 
     """
 
-    tempRes = 0.1                  # Module resolution is 0.1C per ADU
-    tempMax = 850.0                # Maximum temperature for a Pt RTD in deg C
-    wrapT = tempRes * (2**16 - 1)  # ADU wrap at 0C to 2^16-1
+    tempRes = 0.1  # Module resolution is 0.1C per ADU
+    tempMax = 850.0  # Maximum temperature for a Pt RTD in deg C
+    wrapT = tempRes * (2 ** 16 - 1)  # ADU wrap at 0C to 2^16-1
 
     temp = tempRes * raw_value
     if temp > tempMax:
         temp -= wrapT
 
-    return (temp, 'degC')
+    return (temp, "degC")
