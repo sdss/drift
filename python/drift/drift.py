@@ -147,13 +147,6 @@ class Module(object):
 
         if channels is not None:
             self.channels = channels
-            if default_channels and default_channels != self.channels:
-                warnings.warn(
-                    f"channels {self.channels!r} is different from "
-                    f"default channels {default_channels!r} for "
-                    f"model {self.model},",
-                    DriftUserWarning,
-                )
         else:
             if default_channels is None:
                 raise DriftError("Cannot determine module channels.")
