@@ -394,6 +394,8 @@ class Device(object):
 
             if isinstance(value, (tuple, list)):
                 value, units = value
+                if units is None:
+                    units = self.units
             else:
                 units = self.units
 
