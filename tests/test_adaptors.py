@@ -41,3 +41,16 @@ def test_rtd10():
 def test_voltage(raw, v_min, v_max, expected):
 
     assert adaptors.voltage(raw, v_min, v_max) == (expected, "V")
+
+
+@pytest.mark.parametrize(
+    "raw,min,max,range_min,range_max,expected",
+    [
+        (500, 0, 100, 0, 2 ** 15 - 1, 1.53),
+        (0, 2, 16, 3276, 16380, 2),
+    ],
+)
+def test_linear(raw, min, max, range_min, range_max, expected):
+
+    expected_value = pytest.approx(expected, abs=0.01)
+    assert adaptors.linear(raw, min, max, range_min, range_max)[0] == expected_value

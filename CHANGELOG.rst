@@ -6,6 +6,7 @@ Change Log
 
 * :support:`4` Add typing and use Black formatting.
 * :feature:`-` Rename E+E adaptors and add `.rtd10` adaptor.
+* * :feature:`-` Add `.voltage` and `.linear` adaptors.
 
 * :release:`0.1.5 <2020-10-10>`
 * :bug:`3` Fix import of ``AsyncioModbusTcpClient`` when using ``pymodbus>=2.4.0``.

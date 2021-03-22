@@ -68,8 +68,18 @@ def rtd10(raw_value):
 def voltage(raw_value, v_min=0, v_max=30, res=32760):
     """Converts a raw value to a voltage measurement.
 
-    ``V = raw / res * (v_max - v_min)
+    ``V = raw_value / res * (v_max - v_min)``
 
     """
 
     return (float(raw_value) / res * (v_max - v_min), "V")
+
+
+def linear(raw_value, min, max, range_min, range_max, unit=None):
+    """A general adaptor for a linear sensor.
+
+    ``M = min + raw_value / (range_max - range_min) * (max - min)``
+
+    """
+
+    return (min + float(raw_value) / (range_max - range_min) * (max - min), unit)
