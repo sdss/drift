@@ -382,7 +382,7 @@ class Device(object):
             else:
                 raise DriftError(f"invalid mode {self.mode!r}.")
 
-            resp = await reader(self.address, count=1)
+            resp = await reader(self.address - 40001, count=1)
 
             if resp.function_code > 0x80:
                 raise DriftError(
@@ -432,11 +432,11 @@ class Device(object):
             protocol = self.client.protocol
 
             if self.mode == "coil":
-                resp = await protocol.write_coil(self.address, value)
+                resp = await protocol.write_coil(self.address - 40001, value)
             else:
                 if self.channel:
                     value = (value > 0) << self.channel
-                resp = await protocol.write_register(self.address, value)
+                resp = await protocol.write_register(self.address - 40001, value)
 
             if resp.function_code > 0x80:
                 raise DriftError(
@@ -576,8 +576,6 @@ class Drift(object):
         ----------
         name
             The name of the module.
-        address
-            The modbus address.
         kwargs
             Arguments to be passed to `.Module` for initialisation.
 

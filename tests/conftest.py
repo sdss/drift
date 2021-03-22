@@ -110,7 +110,7 @@ def default_drift(drift):
         category="relay",
     )
 
-    drift._state[40001] = 100
-    drift._state[40101] = False
+    drift._state[0] = 100
+    drift._state[100] = False
 
     yield drift

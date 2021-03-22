@@ -129,7 +129,7 @@ async def test_relay_no(drift):
         relay_type="NO",
     )
 
-    drift._state[40001] = False
+    drift._state[0] = False
 
     assert (await relay.read())[0] == "open"
 
@@ -177,7 +177,7 @@ async def test_read_category(default_drift):
         category="relay",
     )
 
-    default_drift._state[40102] = False
+    default_drift._state[101] = False
 
     values = await default_drift.read_category("relay")
 
@@ -198,7 +198,7 @@ async def test_custom_adaptor(default_drift):
         default_drift["module1"].add_device(
             "device2", 40002, adaptor="drift.adaptors:my_adaptor"
         )
-    default_drift._state[40002] = 5
+    default_drift._state[1] = 5
 
     device2 = default_drift.get_device("device2")
 
