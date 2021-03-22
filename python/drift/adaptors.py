@@ -83,3 +83,18 @@ def linear(raw_value, min, max, range_min, range_max, unit=None):
     """
 
     return (min + float(raw_value) / (range_max - range_min) * (max - min), unit)
+
+
+def pwd(raw_value, unit=None):
+    """Pulse Width Modulator (PWM) output.
+
+    The register is a 16-bit word as usual, but the module does not use the 5 LSBs.
+    So, 10-bit resolution on the PWM value (MSB is for sign and is fixed).
+    0-100% duty cycle maps to 0 to 32736 decimal value in the register.
+
+    ``PWD = 100 * raw_value / (2**15 - 1)``
+
+
+    """
+
+    return (100 * float(raw_value) / (2 ** 15 - 1), unit)

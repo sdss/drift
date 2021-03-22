@@ -54,3 +54,10 @@ def test_linear(raw, min, max, range_min, range_max, expected):
 
     expected_value = pytest.approx(expected, abs=0.01)
     assert adaptors.linear(raw, min, max, range_min, range_max)[0] == expected_value
+
+
+@pytest.mark.parametrize("raw_value,expected", [(16000, 48.83), (1023 * 32, 99.9)])
+def test_pwd(raw_value, expected):
+
+    expected_value = pytest.approx(expected, abs=0.01)
+    assert adaptors.pwd(raw_value)[0] == expected_value
