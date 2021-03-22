@@ -125,13 +125,6 @@ class Module(object):
 
         if mode is not None:
             self.mode = mode
-            if default_mode and default_mode != self.mode:
-                warnings.warn(
-                    f"mode {self.mode!r} is different from "
-                    f"default mode {default_mode!r} for model "
-                    f"{self.model},",
-                    DriftUserWarning,
-                )
         else:
             self.mode = default_mode
 
@@ -145,13 +138,6 @@ class Module(object):
 
         if channels is not None:
             self.channels = channels
-            if default_channels and default_channels != self.channels:
-                warnings.warn(
-                    f"number of channels {self.channels!r} is different from "
-                    f"default number of channels {default_channels!r} for model "
-                    f"{self.model},",
-                    DriftUserWarning,
-                )
         else:
             if default_channels is None:
                 raise DriftError("Cannot determine module number of channels.")

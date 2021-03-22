@@ -235,22 +235,6 @@ async def test_adaptor_extra_params(default_drift):
     dev.read(adapt=True) == (200, "V")
 
 
-async def test_mismatch_mode(default_drift):
-
-    with pytest.warns(DriftUserWarning) as w:
-        default_drift.add_module("test", model="750-450", mode="coil")
-
-    assert "mode 'coil' is different from default" in str(w[0].message)
-
-
-async def test_mismatch_channels(default_drift):
-
-    with pytest.warns(DriftUserWarning) as w:
-        default_drift.add_module("test", model="750-450", channels=15)
-
-    assert "number of channels 15 is different from default" in str(w[0].message)
-
-
 async def test_module_bad_mode(default_drift):
 
     with pytest.raises(DriftError):
