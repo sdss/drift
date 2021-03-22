@@ -25,6 +25,7 @@ __all__ = ["Device", "Relay", "Module", "MODULES", "Drift"]
 
 
 MODULES = {
+    "750-511": {"mode": "holding_register", "channels": 2},
     "750-450": {"mode": "input_register", "channels": 4},
     "750-497": {"mode": "input_register", "channels": 8},
     "750-530": {"mode": "coil", "channels": 8},
