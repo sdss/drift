@@ -26,9 +26,9 @@ __all__ = ["Device", "Relay", "Module", "MODULES", "Drift"]
 
 
 MODULES = {
-    "750-450": {"mode": "input", "channels": 4},
-    "750-497": {"mode": "input", "channels": 8},
-    "750-530": {"mode": "output", "channels": 8},
+    "750-450": {"mode": "input_register", "channels": 4},
+    "750-497": {"mode": "input_register", "channels": 8},
+    "750-530": {"mode": "coil", "channels": 8},
 }
 
 
@@ -83,14 +83,11 @@ class Module(object):
         A name to be associated with this module.
     drift
         The instance of `.Drift` used to communicate with the modbus network.
-    address
-        The initial address associated with this module. In modbus, addresses
-        start at 40001.
     model
         The Drift model for this module.
     mode
-        Whether this is an ``input`` or ``output`` module. If not provided it
-        will be determined from ``model``.
+        The type of object (``coil``, ``discrete``, ``input_register``, or
+        ``holding_register``). If `None`, will be determined from the model.
     channels
         The number of channels in this module. If not provided it will be
         determined from ``model``.
@@ -103,7 +100,6 @@ class Module(object):
         self,
         name: str,
         drift: Drift,
-        address: int,
         model: Optional[str] = None,
         mode: Optional[str] = None,
         channels: Optional[int] = None,
@@ -112,7 +108,6 @@ class Module(object):
 
         self.name = name
         self.drift = drift
-        self.address = address
 
         self.description = description
 
@@ -138,30 +133,40 @@ class Module(object):
                     DriftUserWarning,
                 )
         else:
-            if default_mode is None:
-                raise DriftError("Cannot determine module mode.")
             self.mode = default_mode
 
-        if self.mode not in ["input", "output"]:
-            raise DriftError(f"Invalid mode {mode}.")
+        if self.mode and self.mode not in [
+            "coil",
+            "discrete",
+            "input_register",
+            "holding_register",
+        ]:
+            raise DriftError(f"Invalid mode {mode!r}.")
 
         if channels is not None:
             self.channels = channels
+            if default_channels and default_channels != self.channels:
+                warnings.warn(
+                    f"number of channels {self.channels!r} is different from "
+                    f"default number of channels {default_channels!r} for model "
+                    f"{self.model},",
+                    DriftUserWarning,
+                )
         else:
             if default_channels is None:
-                raise DriftError("Cannot determine module channels.")
+                raise DriftError("Cannot determine module number of channels.")
             self.channels = default_channels
 
         self.devices = CaseInsensitiveDict()
 
         log.info(
-            f"Created module {self.name}@{self.address} with "
-            f"mode {self.mode} and {self.channels} channels."
+            f"Created module {self.name} with mode {self.mode!r} "
+            f"and {self.channels} channels."
         )
 
     def __repr__(self):
         return (
-            f"<Module {self.name}@{self.address} (mode={self.mode!r}, "
+            f"<Module {self.name} (mode={self.mode!r}, "
             f"channels={self.channels}, n_devices={len(self.devices)})>"
         )
 
@@ -173,7 +178,7 @@ class Module(object):
     def add_device(
         self,
         name: str | Device,
-        channel: Optional[int] = None,
+        address: Optional[int] = None,
         device_class: Optional[Type[Device]] = None,
         **kwargs,
     ) -> Device:
@@ -185,10 +190,6 @@ class Module(object):
             The name of the device. It is treated as case-insensitive. It can
             also be a `.Device` instance, in which case the remaining
             parameters will be ignored.
-        channel
-            The channel of the device in the module (relative to the
-            module address), zero-indexed. Required if ``name`` is not
-            a `.Device`.
         device_class
             Either `.Device` or a subclass of it.
         kwargs
@@ -209,12 +210,14 @@ class Module(object):
                     f"Device {name!r} already exists in module {self.name!r}."
                 )
 
-            assert channel is not None, "channel is not defined for the new device."
+            assert address, "address cannot be None"
 
-            device = device_class(self, name, channel, **kwargs)
+            device = device_class(self, name, address, **kwargs)
 
         self.devices[device.name] = device
-        log.info(f"Added device {device.name} to module {self.name}.")
+        log.info(
+            f"Added device {device.name} with addres {address} to module {self.name}."
+        )
 
         return device
 
@@ -243,16 +246,18 @@ class Device(object):
         The `.Module` to which this device is connected to.
     name
         The name of the device. It is treated as case-insensitive.
+    address
+        The address of the device.
+    mode
+        The type of object (``coil``, ``discrete``, ``input_register``, or
+        ``holding_register``). If `None`, uses the mode from the module.
     channel
-        The channel of the PLC inside the module, zero-indexed, so that the
-        first channel is 0 and the full address of the device is
-        ``module_address + channel - 40001``.
-    coils
-        Whether to read coils or registers for this device.
+        For multi-bit registers, the bit to return. If `None`, returns the entire
+        register value.
     category
         A user-defined category for this device. This can be used to group
-        different devices of similar type, for example ``'temperature'`` to
-        indicate temperature sensors.
+        devices of similar type from different modules, for example ``'temperature'``
+        to indicate temperature sensors.
     description
         A description of the purpose of the device.
     units
@@ -278,8 +283,9 @@ class Device(object):
         self,
         module: Module,
         name: str,
-        channel: int,
-        coils: bool = False,
+        address: int,
+        mode: Optional[str] = None,
+        channel: Optional[int] = None,
         description: str = "",
         units: Optional[str] = None,
         category: Optional[str] = None,
@@ -291,18 +297,41 @@ class Device(object):
 
         self.module = module
         self.name = name
+        self.address = address
         self.channel = channel
-        self.coils = coils
         self.description = description
         self.units = units
         self.category = category
         self.adaptor = self._parse_adaptor(adaptor)
         self._adaptor_extra_params = adaptor_extra_params
 
-        log.info(f"Created device {self.name}@{self.module.address}:{self.channel}.")
+        self.mode = mode or self.module.mode
+
+        if not self.mode:
+            raise DriftError(
+                f"{self.name}@{self.address}: mode not specified for device or module."
+            )
+
+        if self.mode not in [
+            "coil",
+            "discrete",
+            "input_register",
+            "holding_register",
+        ]:
+            raise DriftError(f"Invalid mode {mode!r}.")
+
+        if self.channel:
+            assert self.channel < self.module.channels
+
+        log.info(
+            f"Created device {self.name}@{self.address}"
+            + (f":{self.channel}." if self.channel else ".")
+        )
 
     def __repr__(self):
-        return f"<Device {self.name}@{self.module.address}:{self.channel}>"
+        return f"<Device {self.name}@{self.address}" + (
+            f":{self.channel}>" if self.channel else ">"
+        )
 
     @staticmethod
     def _parse_adaptor(adaptor):
@@ -331,12 +360,6 @@ class Device(object):
             return dict(adaptor)
 
     @property
-    def address(self) -> int:
-        """Returns the full address of this PLC."""
-
-        return self.module.address + self.channel - 40001
-
-    @property
     def client(self) -> AsyncioModbusTcpClient | None:
         """Returns the ``pymodbus`` client."""
 
@@ -362,10 +385,16 @@ class Device(object):
 
             protocol = self.client.protocol
 
-            if self.coils:
+            if self.mode == "coil":
                 reader = protocol.read_coils
-            else:
+            elif self.mode == "discrete":
+                reader = protocol.read_discrete_inputs
+            elif self.mode == "input_register":
                 reader = protocol.read_input_registers
+            elif self.mode == "holding_register":
+                reader = protocol.read_holding_registers
+            else:
+                raise DriftError(f"invalid mode {self.mode!r}.")
 
             resp = await reader(self.address, count=1)
 
@@ -375,7 +404,12 @@ class Device(object):
                     f"{self.name!r}: 0x{resp.function_code:02X}."
                 )
 
-            value = resp.registers[0] if not self.coils else resp.bits[0]
+            if self.mode == "coil" or self.mode == "discrete":
+                value = resp.bits[0]
+            else:
+                value = resp.registers[0]
+                if self.channel:
+                    value = (value & (1 << self.channel)) > 0
 
             if not adapt:
                 return value
@@ -404,16 +438,18 @@ class Device(object):
     async def write(self, value) -> bool:
         """Writes values to a coil or register."""
 
-        if self.module.mode != "output":
-            raise DriftError("Writing is not allowed to this module.")
+        if self.mode != "coil" and self.mode != "holding_register":
+            raise DriftError("Writing is not allowed to this device.")
 
         async with self.module.drift:
 
             protocol = self.client.protocol
 
-            if self.coils:
+            if self.mode == "coil":
                 resp = await protocol.write_coil(self.address, value)
             else:
+                if self.channel:
+                    value = (value > 0) << self.channel
                 resp = await protocol.write_register(self.address, value)
 
             if resp.function_code > 0x80:
@@ -447,8 +483,8 @@ class Relay(Device):
 
         kwargs["adaptor"] = adaptor
 
-        if "coils" not in kwargs:
-            kwargs["coils"] = True
+        if "mode" not in kwargs:
+            kwargs["mode"] = "coil"
 
         super().__init__(*args, **kwargs)
 
@@ -547,7 +583,7 @@ class Drift(object):
 
         return self.modules[name]
 
-    def add_module(self, name: str, address: int, **params) -> Module:
+    def add_module(self, name: str, **kwargs) -> Module:
         """Adds a new module.
 
         Parameters
@@ -556,7 +592,7 @@ class Drift(object):
             The name of the module.
         address
             The modbus address.
-        params
+        kwargs
             Arguments to be passed to `.Module` for initialisation.
 
         """
@@ -564,7 +600,7 @@ class Drift(object):
         if name in self.modules:
             raise ValueError(f"Module {name} is already connected.")
 
-        self.modules[name] = Module(name, self, address, **params)
+        self.modules[name] = Module(name, self, **kwargs)
 
         return self.modules[name]
 
@@ -682,7 +718,7 @@ class Drift(object):
             for device in devices:
 
                 device_config = devices[device].copy()
-                channel = device_config.pop("channel")
+                address = device_config.pop("address")
                 device_class = None
                 type_ = device_config.pop("type", None)
 
@@ -698,7 +734,10 @@ class Drift(object):
                     raise DriftError("Cannot find valid device class for type {type_}.")
 
                 new_drift.modules[module].add_device(
-                    device, channel, device_class, **device_config
+                    device,
+                    address,
+                    device_class,
+                    **device_config,
                 )
 
         return new_drift

@@ -31,7 +31,7 @@ async def read_mocker(state, address, coil=False, count=1):
     response.bits = []
     response.registers = []
 
-    value = state[40001 + address]
+    value = state[address]
 
     if coil:
         response.bits.append(value)
@@ -46,7 +46,7 @@ async def write_mocker(state, address, value):
     response = types.SimpleNamespace()
     response.function_code = 0
 
-    state[40001 + address] = value
+    state[address] = value
 
     return response
 
@@ -74,6 +74,7 @@ def drift():
         side_effect=partial(read_mocker, state, coil=False)
     )
     protocol.read_coils = MagicMock(side_effect=partial(read_mocker, state, coil=True))
+    protocol.read_holding_registers = MagicMock(side_effect=partial(read_mocker, state))
     protocol.write_coil = MagicMock(side_effect=partial(write_mocker, state))
     protocol.write_register = MagicMock(side_effect=partial(write_mocker, state))
 
@@ -84,17 +85,30 @@ def drift():
 def default_drift(drift):
     """A Drift with some default devices connected."""
 
-    module1 = drift.add_module("module1", 40001, mode="input", channels=4)
+    module1 = drift.add_module(
+        "module1",
+        channels=4,
+        mode="input_register",
+    )
     module1.add_device(
         "temp1",
-        0,
+        40001,
         adaptor="linear",
         adaptor_extra_params=(-30, 100, 0, 2 ** 15 - 1),
         units="degC",
     )
 
-    module2 = drift.add_module("module2", 40101, mode="output", channels=4)
-    module2.add_device("relay1", 0, device_class=Relay, category="relay")
+    module2 = drift.add_module(
+        "module2",
+        channels=4,
+    )
+    module2.add_device(
+        "relay1",
+        40101,
+        mode="coil",
+        device_class=Relay,
+        category="relay",
+    )
 
     drift._state[40001] = 100
     drift._state[40101] = False

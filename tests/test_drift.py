@@ -13,7 +13,7 @@ import pytest
 from yaml import SafeLoader, load
 
 from drift import Drift, Relay, adaptors
-from drift.exceptions import DriftError
+from drift.exceptions import DriftError, DriftUserWarning
 
 from .conftest import AsyncMock, MagicMock
 
@@ -27,10 +27,10 @@ port: 502
 modules:
     module1:
         model: "750-530"
-        address: 40513
         devices:
             "relay1":
-                channel: 0
+                address: 40513
+                mode: coil
                 type: relay
                 relay_type: "NO"
 
@@ -44,11 +44,10 @@ async def test_drift(default_drift):
     assert len(default_drift.modules) == 2
 
     assert len(default_drift["module1"].devices) == 1
-    assert default_drift["module1"].mode == "input"
+    assert default_drift["module1"].mode == "input_register"
     assert default_drift["module1"].channels == 4
 
     assert len(default_drift["module2"].devices) == 1
-    assert default_drift["module2"].mode == "output"
     assert default_drift["module2"].channels == 4
 
 
@@ -76,10 +75,10 @@ async def test_drift_write(default_drift):
 
 async def test_add_known_module(drift):
 
-    drift.add_module("module", 40001, model="750-497")
+    drift.add_module("module", model="750-497")
 
     assert drift["module"].channels == 8
-    assert drift["module"].mode == "input"
+    assert drift["module"].mode == "input_register"
 
 
 async def test_remove_device(default_drift):
@@ -122,9 +121,12 @@ async def test_relay(default_drift):
 
 async def test_relay_no(drift):
 
-    drift.add_module("module1", 40001, mode="output", channels=4)
+    drift.add_module("module1", mode="coil", channels=4)
     relay = drift["module1"].add_device(
-        "relay_no", 0, device_class=Relay, relay_type="NO"
+        "relay_no",
+        40001,
+        device_class=Relay,
+        relay_type="NO",
     )
 
     drift._state[40001] = False
@@ -146,7 +148,7 @@ async def test_adaptor_tuple():
     del relay["type"]
     del relay["relay_type"]
     relay["adaptor"] = [(False, "open"), (True, "closed")]
-    relay["coils"] = True
+    relay["mode"] = "coil"
 
     drift = Drift.from_config(config_dict)
 
@@ -168,7 +170,11 @@ async def test_adaptor_tuple():
 async def test_read_category(default_drift):
 
     default_drift["module2"].add_device(
-        "relay_no", 1, device_class=Relay, relay_type="NO", category="relay"
+        "relay_no",
+        40102,
+        device_class=Relay,
+        relay_type="NO",
+        category="relay",
     )
 
     default_drift._state[40102] = False
@@ -190,7 +196,7 @@ async def test_custom_adaptor(default_drift):
     ):
 
         default_drift["module1"].add_device(
-            "device2", 1, adaptor="drift.adaptors:my_adaptor"
+            "device2", 40002, adaptor="drift.adaptors:my_adaptor"
         )
     default_drift._state[40002] = 5
 
@@ -203,13 +209,13 @@ async def test_custom_adaptor(default_drift):
 async def test_invalid_model(drift):
 
     with pytest.raises(DriftError):
-        drift.add_module("unknown_module", 42000, model="bad_model")
+        drift.add_module("unknown_module", model="bad_model")
 
 
 async def test_add_device(default_drift):
 
     module2 = default_drift["module2"]
-    relay = Relay(module2, "relay2", 3, relay_type="NO")
+    relay = Relay(module2, "relay2", 40003, relay_type="NO")
     module2.add_device(relay)
 
     assert default_drift.get_device("relay2").relay_type == "NO"
@@ -227,3 +233,63 @@ async def test_adaptor_extra_params(default_drift):
     dev._adaptor_extra_params = [0, 20, 10]
 
     dev.read(adapt=True) == (200, "V")
+
+
+async def test_mismatch_mode(default_drift):
+
+    with pytest.warns(DriftUserWarning) as w:
+        default_drift.add_module("test", model="750-450", mode="coil")
+
+    assert "mode 'coil' is different from default" in str(w[0].message)
+
+
+async def test_mismatch_channels(default_drift):
+
+    with pytest.warns(DriftUserWarning) as w:
+        default_drift.add_module("test", model="750-450", channels=15)
+
+    assert "number of channels 15 is different from default" in str(w[0].message)
+
+
+async def test_module_bad_mode(default_drift):
+
+    with pytest.raises(DriftError):
+        default_drift.add_module("test", mode="bad_mode")
+
+
+async def test_device_no_mode(default_drift):
+
+    with pytest.raises(DriftError):
+        default_drift["module2"].add_device("test", 40100)
+
+
+async def test_device_bad_mode(default_drift):
+
+    with pytest.raises(DriftError):
+        default_drift["module2"].add_device("test", 40100, mode="aaa")
+
+
+async def test_unknown_channels(default_drift):
+
+    with pytest.raises(DriftError) as err:
+        default_drift.add_module("test")
+
+    assert "Cannot determine module number of channels." in str(err)
+
+
+async def test_add_device_already_exists(default_drift):
+
+    with pytest.raises(DriftError) as err:
+        default_drift["module1"].add_device("temp1", 40100)
+
+    assert "already exists in module" in str(err)
+
+
+async def test_relay_holding_register(default_drift):
+
+    mod = default_drift.add_module("module3", channels=4)
+    dev = mod.add_device("relayH", 40501, mode="holding_register", channel=3)
+
+    await dev.write(True)
+
+    assert (await dev.read())[0] is True
