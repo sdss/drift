@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import asyncio
 import importlib
-import warnings
 from collections import defaultdict
 
 from typing import Any, Callable, Optional, Type, cast
@@ -19,7 +18,7 @@ from pymodbus.client.asynchronous.async_io import AsyncioModbusTcpClient
 from yaml import SafeLoader, load
 
 from drift import adaptors, log
-from drift.exceptions import DriftError, DriftUserWarning
+from drift.exceptions import DriftError
 
 
 __all__ = ["Device", "Relay", "Module", "MODULES", "Drift"]

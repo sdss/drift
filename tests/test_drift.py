@@ -13,7 +13,7 @@ import pytest
 from yaml import SafeLoader, load
 
 from drift import Drift, Relay, adaptors
-from drift.exceptions import DriftError, DriftUserWarning
+from drift.exceptions import DriftError
 
 from .conftest import AsyncMock, MagicMock
 
