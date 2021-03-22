@@ -87,7 +87,10 @@ class Module(object):
         The Drift model for this module.
     mode
         The type of object (``coil``, ``discrete``, ``input_register``, or
-        ``holding_register``). If `None`, will be determined from the model.
+        ``holding_register``). If `None`, will be determined from the model,
+        if possible. The ``mode`` of a module is only used if the `.Device` does
+        not specify its own ``mode`` since different devices in a module may
+        have different modules.
     channels
         The number of channels in this module. If not provided it will be
         determined from ``model``.
