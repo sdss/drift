@@ -61,3 +61,13 @@ def test_pwd(raw_value, expected):
 
     expected_value = pytest.approx(expected, abs=0.01)
     assert adaptors.pwd(raw_value)[0] == expected_value
+
+
+@pytest.mark.parametrize(
+    "raw_value,meter_gain,expected",
+    [(3276, 1, 0), (16380, 4, 16)],
+)
+def test_flow(raw_value, meter_gain, expected):
+
+    expected_value = pytest.approx(expected, abs=0.01)
+    assert adaptors.flow(raw_value, meter_gain)[0] == expected_value

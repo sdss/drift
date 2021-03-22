@@ -98,3 +98,13 @@ def pwd(raw_value, unit=None):
     """
 
     return (100 * float(raw_value) / (2 ** 15 - 1), unit)
+
+
+def flow(raw_value, meter_gain=1):
+    """Flow meter conversion.
+
+    ``flow_rate = meter_gain * (raw_value - 3276) / 3276``
+
+    """
+
+    return (meter_gain * (float(raw_value) - 3276) / 3276, "l/min")
