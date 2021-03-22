@@ -4,6 +4,7 @@
 Change Log
 ==========
 
+* :release:`0.2.0 <2021-02-22>`
 * :support:`4` Add typing and use Black formatting.
 * :feature:`-` Major rewrite of how addresses, channels, and modes work.
 * :feature:`-` Rename E+E adaptors and add `.rtd10` adaptor.
