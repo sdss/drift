@@ -354,98 +354,131 @@ class Device(object):
 
         return self.module.drift.client
 
-    async def read(self, adapt=True) -> tuple[int | float, None | str]:
+    async def read(
+        self,
+        adapt=True,
+        connect=True,
+    ) -> tuple[int | float, None | str]:
         """Reads the value of the coil or register.
 
         If ``adapt=True`` and a valid adaptor was provided, the value returned
         is the one obtained after applying the conversion function to the
         raw register value. Otherwise returns the raw value.
 
+        If ``connect=False``, the user is responsible for connecting and disconnecting.
+        This is sometimes useful for bulk reading, when one does not want to
+        recreate the socket for each device.
+
+
         Returns
         -------
-        read_value : tuple
+        read_value
             A tuple in which the first element is the read raw or converted
             value and the second is the associated unit. If ``adapt=False`` no
             units are returned.
 
         """
 
-        async with self.module.drift:
+        if connect:
+            async with self.module.drift:
+                return await self._read(adapt=adapt)
+        else:
+            return await self._read(adapt=adapt)
 
-            protocol = self.client.protocol
+    async def _read(self, adapt=True):
 
-            if self.mode == "coil":
-                reader = protocol.read_coils
-            elif self.mode == "discrete":
-                reader = protocol.read_discrete_inputs
-            elif self.mode == "input_register":
-                reader = protocol.read_input_registers
-            elif self.mode == "holding_register":
-                reader = protocol.read_holding_registers
+        protocol = self.client.protocol
+
+        if self.mode == "coil":
+            reader = protocol.read_coils
+        elif self.mode == "discrete":
+            reader = protocol.read_discrete_inputs
+        elif self.mode == "input_register":
+            reader = protocol.read_input_registers
+        elif self.mode == "holding_register":
+            reader = protocol.read_holding_registers
+        else:
+            raise DriftError(f"invalid mode {self.mode!r}.")
+
+        resp = await reader(self.address - 40001, count=1)
+
+        if resp.function_code > 0x80:
+            raise DriftError(
+                f"Invalid response for device "
+                f"{self.name!r}: 0x{resp.function_code:02X}."
+            )
+
+        if self.mode == "coil" or self.mode == "discrete":
+            value = resp.bits[0]
+        else:
+            value = resp.registers[0]
+            if self.channel:
+                value = (value & (1 << self.channel)) > 0
+
+        if not adapt:
+            return value
+
+        if adapt and self.adaptor is not None:
+            if callable(self.adaptor):
+                value = self.adaptor(value, *self._adaptor_extra_params)
             else:
-                raise DriftError(f"invalid mode {self.mode!r}.")
-
-            resp = await reader(self.address - 40001, count=1)
-
-            if resp.function_code > 0x80:
-                raise DriftError(
-                    f"Invalid response for device "
-                    f"{self.name!r}: 0x{resp.function_code:02X}."
-                )
-
-            if self.mode == "coil" or self.mode == "discrete":
-                value = resp.bits[0]
-            else:
-                value = resp.registers[0]
-                if self.channel:
-                    value = (value & (1 << self.channel)) > 0
-
-            if not adapt:
-                return value
-
-            if adapt and self.adaptor is not None:
-                if callable(self.adaptor):
-                    value = self.adaptor(value, *self._adaptor_extra_params)
+                if value not in self.adaptor:
+                    raise DriftError(
+                        f"Cannot find associated value for "
+                        f"{value} in adaptor mapping."
+                    )
                 else:
-                    if value not in self.adaptor:
-                        raise DriftError(
-                            f"Cannot find associated value for "
-                            f"{value} in adaptor mapping."
-                        )
-                    else:
-                        value = self.adaptor[value]
+                    value = self.adaptor[value]
 
-            if isinstance(value, (tuple, list)):
-                value, units = value
-                if units is None:
-                    units = self.units
-            else:
+        if isinstance(value, (tuple, list)):
+            value, units = value
+            if units is None:
                 units = self.units
+        else:
+            units = self.units
 
         return value, units
 
-    async def write(self, value) -> bool:
-        """Writes values to a coil or register."""
+    async def write(self, value, connect=True) -> bool:
+        """Writes values to a coil or register.
+
+        Parameters
+        ----------
+        value
+            The value to write to the device.
+        connect
+            Whether to connect to the client and disconnect after writing. If
+            ``connect=False``, the user is responsible for connecting and disconnecting.
+            This is sometimes useful for bulk writing, when one does not want to
+            recreate the socket for each device.
+
+        """
 
         if self.mode != "coil" and self.mode != "holding_register":
             raise DriftError("Writing is not allowed to this device.")
 
-        async with self.module.drift:
+        if connect:
+            async with self.module.drift:
+                return await self._write(value)
+        else:
+            return await self._write(value)
 
-            protocol = self.client.protocol
+    async def _write(self, value):
 
-            if self.mode == "coil":
-                resp = await protocol.write_coil(self.address - 40001, value)
-            else:
-                if self.channel:
-                    value = (value > 0) << self.channel
-                resp = await protocol.write_register(self.address - 40001, value)
+        protocol = self.client.protocol
 
-            if resp.function_code > 0x80:
-                raise DriftError(
-                    f"Invalid response for device {self.name!r}: "
-                    f"0x{resp.function_code:02X}."
-                )
+        if self.mode == "coil":
+            resp = await protocol.write_coil(self.address - 40001, value)
+        else:
+            if self.channel:
+                value = (value > 0) << self.channel
+            resp = await protocol.write_register(self.address - 40001, value)
+
+        if resp.function_code > 0x80:
+            raise DriftError(
+                f"Invalid response for device {self.name!r}: "
+                f"0x{resp.function_code:02X}."
+            )
 
         return True
 
@@ -539,6 +572,8 @@ class Drift(object):
         self.client = AsyncioModbusTcpClient(address, port=port)
 
         self.modules = CaseInsensitiveDict()
+
+        self.lock = asyncio.Lock()
 
     def __repr__(self):
         return f"<Drift @ {self.address}>"
@@ -648,19 +683,27 @@ class Drift(object):
 
         return await self.read_device(*args, **kwargs)
 
-    async def read_category(self, category, adapt=True):
+    async def read_category(
+        self,
+        category: str,
+        adapt: bool = True,
+        connect: bool = True,
+    ) -> dict[str, Any]:
         """Reads all the devices of a given category.
 
         Parameters
         ----------
-        category : str
+        category
             The category to match.
-        adapt : bool
+        adapt
             If possible, convert the value to real units.
+        connect
+            Whether to connect to the client and disconnect after each read. If
+            ``connect=False``, the user is responsible for connecting and disconnecting.
 
         Returns
         -------
-        read_values : dict
+        read_values
             A dictionary of module-qualified device names and read values,
             along with their units.
 
@@ -672,7 +715,7 @@ class Drift(object):
             for device in self.modules[module].devices.values():
                 name = f"{module}.{device.name.lower()}"
                 if device.category and device.category.lower() == category:
-                    values[name] = await device.read(adapt=adapt)
+                    values[name] = await device.read(adapt=adapt, connect=connect)
 
         return values
 
@@ -682,7 +725,7 @@ class Drift(object):
 
         Parameters
         ----------
-        config : dict or str
+        config
             A properly formatted configuration dictionary or the path to a
             YAML file from which it can be read. Refer to :ref:`config-file`
             for details on the format.

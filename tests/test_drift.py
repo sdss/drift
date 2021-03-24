@@ -60,6 +60,14 @@ async def test_drift_read(default_drift):
     assert units == "degC"
 
 
+async def test_drift_read_no_connect(default_drift):
+
+    await default_drift.client.connect()
+    result = await default_drift.get_device("temp1").read(adapt=False, connect=False)
+    assert result == 100
+    default_drift.client.stop()
+
+
 async def test_drift_read_device(default_drift):
 
     assert await default_drift.read_device("temp1", adapt=False) == 100
@@ -70,6 +78,15 @@ async def test_drift_write(default_drift):
 
     assert (await default_drift.get_device("relay1").read()) == ("closed", None)
     await default_drift.get_device("relay1").write(True)
+    assert (await default_drift.get_device("relay1").read()) == ("open", None)
+
+
+async def test_drift_write_no_connect(default_drift):
+
+    assert (await default_drift.get_device("relay1").read()) == ("closed", None)
+    await default_drift.client.connect()
+    await default_drift.get_device("relay1").write(True, connect=False)
+    default_drift.client.stop()
     assert (await default_drift.get_device("relay1").read()) == ("open", None)
 
 
