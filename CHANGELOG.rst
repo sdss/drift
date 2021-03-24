@@ -4,6 +4,7 @@
 Change Log
 ==========
 
+* :release:`0.2.1 <2021-02-23>`
 * :bug:`-` Add a lock to the connection context manager to prevent multiple simultaneous connections disconnecting the client.
 
 * :release:`0.2.0 <2021-02-22>`
