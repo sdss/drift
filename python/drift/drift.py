@@ -546,6 +546,8 @@ class Drift(object):
     async def __aenter__(self):
         """Initialises the connection to the server."""
 
+        await self.lock.acquire()
+
         try:
             await asyncio.wait_for(self.client.connect(), timeout=1)
         except asyncio.TimeoutError:
@@ -562,8 +564,8 @@ class Drift(object):
         """Closes the connection to the server."""
 
         self.client.stop()
-
         log.debug(f"Disonnected from {self.address}.")
+        self.lock.release()
 
         return
 

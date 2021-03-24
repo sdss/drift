@@ -4,6 +4,8 @@
 Change Log
 ==========
 
+* :bug:`-` Add a lock to the connection context manager to prevent multiple simultaneous connections disconnecting the client.
+
 * :release:`0.2.0 <2021-02-22>`
 * :support:`4` Add typing and use Black formatting.
 * :feature:`-` Major rewrite of how addresses, channels, and modes work.
