@@ -189,6 +189,7 @@ async def test_read_category(default_drift):
     default_drift["module2"].add_device(
         "relay_no",
         40102,
+        mode="coil",
         device_class=Relay,
         relay_type="NO",
         category="relay",
@@ -232,7 +233,7 @@ async def test_invalid_model(drift):
 async def test_add_device(default_drift):
 
     module2 = default_drift["module2"]
-    relay = Relay(module2, "relay2", 40003, relay_type="NO")
+    relay = Relay(module2, "relay2", 40003, relay_type="NO", mode="coil")
     module2.add_device(relay)
 
     assert default_drift.get_device("relay2").relay_type == "NO"

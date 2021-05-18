@@ -412,7 +412,7 @@ class Device(object):
             value = resp.bits[0]
         else:
             value = resp.registers[0]
-            if self.channel:
+            if self.channel is not None:
                 value = (value & (1 << self.channel)) > 0
 
         if not adapt:
@@ -471,7 +471,12 @@ class Device(object):
             resp = await protocol.write_coil(self.address - 40001, value)
         else:
             if self.channel:
-                value = (value > 0) << self.channel
+                resp = await protocol.read_holding_registers(self.address - 40001)
+                current_value = resp.registers[0]
+                if value is True or value > 0:
+                    value = current_value | (1 << self.channel)
+                else:
+                    value = current_value & (~(1 << self.channel))
             resp = await protocol.write_register(self.address - 40001, value)
 
         if resp.function_code > 0x80:
@@ -494,7 +499,7 @@ class Relay(Device):
 
     __type__ = "relay"
 
-    def __init__(self, *args, relay_type="NC", **kwargs):
+    def __init__(self, module: Module, *args, relay_type="NC", **kwargs):
 
         self.relay_type = relay_type
 
@@ -505,10 +510,9 @@ class Relay(Device):
 
         kwargs["adaptor"] = adaptor
 
-        if "mode" not in kwargs:
-            kwargs["mode"] = "coil"
+        super().__init__(module, *args, **kwargs)
 
-        super().__init__(*args, **kwargs)
+        assert self.mode in ["coil", "holding_register"]
 
     async def open(self):
         """Opens the relay."""

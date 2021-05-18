@@ -111,6 +111,7 @@ def default_drift(drift):
     )
 
     drift._state[0] = 100
+    drift._state[500] = False
     drift._state[100] = False
 
     yield drift

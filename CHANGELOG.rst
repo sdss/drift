@@ -4,6 +4,8 @@
 Change Log
 ==========
 
+* :bug:`-` Fix a nasty bug that would force all relays to be of mode ``coil`` even if its module has been defined as a ``holding_register``. Also, fix the writing of bits when ``channel`` is set in a holding register.
+
 * :release:`0.2.1 <2021-02-23>`
 * :bug:`-` Add a lock to the connection context manager to prevent multiple simultaneous connections disconnecting the client.
 
