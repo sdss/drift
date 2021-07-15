@@ -387,6 +387,8 @@ class Device(object):
 
     async def _read(self, adapt=True):
 
+        assert self.client and self.client.protocol
+
         protocol = self.client.protocol
 
         if self.mode == "coil":
@@ -464,6 +466,8 @@ class Device(object):
             return await self._write(value)
 
     async def _write(self, value):
+
+        assert self.client and self.client.protocol
 
         protocol = self.client.protocol
 
