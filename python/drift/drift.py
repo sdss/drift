@@ -309,17 +309,17 @@ class Device(object):
         ]:
             raise DriftError(f"Invalid mode {mode!r}.")
 
-        if self.channel:
+        if self.channel is not None:
             assert self.channel < self.module.channels
 
         log.info(
             f"Created device {self.name}@{self.address}"
-            + (f":{self.channel}." if self.channel else ".")
+            + (f":{self.channel}." if self.channel is not None else ".")
         )
 
     def __repr__(self):
         return f"<Device {self.name}@{self.address}" + (
-            f":{self.channel}>" if self.channel else ">"
+            f":{self.channel}>" if self.channel is not None else ">"
         )
 
     @staticmethod
@@ -474,7 +474,7 @@ class Device(object):
         if self.mode == "coil":
             resp = await protocol.write_coil(self.address - 40001, value)
         else:
-            if self.channel:
+            if self.channel is not None:
                 resp = await protocol.read_holding_registers(self.address - 40001)
                 current_value = resp.registers[0]
                 if value is True or value > 0:

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## 0.2.3 - July 15, 2021
+
+### 🔧 Fixed
+
+* [#5](https://github.com/sdss/drift/issues/5) Fixed an error that would happen when switching the first (channel 0) bit in a holding register. In that case the code would just set the entire register, ignoring the other set bits.
+
+
 ## 0.2.2 - May 18, 2021
 
 ### 🔧 Fixed
