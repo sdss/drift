@@ -295,3 +295,18 @@ async def test_relay_holding_register(default_drift):
     await dev.write(True)
 
     assert (await dev.read())[0] is True
+
+
+async def test_relay_holdin_register_channel0(default_drift):
+
+    mod = default_drift.add_module("module3", channels=4)
+    dev1 = mod.add_device("relayH1", 40501, mode="holding_register", channel=0)
+    dev2 = mod.add_device("relayH2", 40501, mode="holding_register", channel=3)
+
+    await dev2.write(True)
+
+    await dev1.write(True)
+    assert (await dev2.read())[0] is True
+
+    await dev1.write(False)
+    assert (await dev2.read())[0] is True
