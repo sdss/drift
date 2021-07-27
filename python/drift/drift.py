@@ -594,9 +594,11 @@ class Drift(object):
         try:
             await asyncio.wait_for(self.client.connect(), timeout=1)
         except asyncio.TimeoutError:
+            self.lock.release()
             raise DriftError(f"Failed connecting to server at {self.address}.")
 
         if not self.client.connected:
+            self.lock.release()
             raise DriftError(f"Failed connecting to server at {self.address}.")
 
         log.debug(f"Connected to {self.address}.")

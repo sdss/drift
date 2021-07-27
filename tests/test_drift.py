@@ -6,6 +6,7 @@
 # @Filename: test_drift.py
 # @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
 
+import asyncio
 import types
 from unittest.mock import patch
 
@@ -58,6 +59,17 @@ async def test_drift_read(default_drift):
     value, units = await default_drift.get_device("module1.temp1").read()
     assert value == pytest.approx(-29.69, 0.01)
     assert units == "degC"
+
+
+async def test_drift_connect_fails(default_drift, mocker):
+
+    default_drift.client.connect = mocker.MagicMock(side_effect=asyncio.TimeoutError)
+
+    with pytest.raises(DriftError):
+        async with default_drift:
+            pass
+
+    assert not default_drift.lock.locked()
 
 
 async def test_drift_read_no_connect(default_drift):
