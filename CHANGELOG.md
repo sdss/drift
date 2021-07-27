@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.4 - July 27, 2021
+
+### 🔧 Fixed
+
+* [#7](https://github.com/sdss/drift/issues/7) If the connection to the client fails, release the lock immediately.
+
 
 ## 0.2.3 - July 15, 2021
 
