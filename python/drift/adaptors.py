@@ -65,14 +65,14 @@ def rtd10(raw_value):
     return (float(raw_value) / 10.0, "degC")
 
 
-def voltage(raw_value, v_min=0, v_max=30, res=32760):
+def voltage(raw_value, v_min=0, v_max=10, res=32760, gain=1):
     """Converts a raw value to a voltage measurement.
 
-    ``V = raw_value / res * (v_max - v_min)``
+    ``V = raw_value / res * (v_max - v_min) * gain``
 
     """
 
-    return (float(raw_value) / res * (v_max - v_min), "V")
+    return (float(raw_value) / res * (v_max - v_min) * gain, "V")
 
 
 def linear(raw_value, min, max, range_min, range_max, unit=None):

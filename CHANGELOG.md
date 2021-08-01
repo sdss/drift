@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.5 - August 1, 2021
+
+### ✨ Improved
+
+* Added `gain` parameter to `voltage` adaptor.
+
+
 ## 0.2.4 - July 27, 2021
 
 ### 🔧 Fixed
