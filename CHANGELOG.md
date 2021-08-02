@@ -1,5 +1,12 @@
 # Changelog
 
+## Next version
+
+### 🔧 Fixed
+
+* Fix case when linear adaptor range does not start at zero.
+
+
 ## 0.2.5 - August 1, 2021
 
 ### ✨ Improved

@@ -82,7 +82,10 @@ def linear(raw_value, min, max, range_min, range_max, unit=None):
 
     """
 
-    return (min + float(raw_value) / (range_max - range_min) * (max - min), unit)
+    return (
+        min + float(raw_value - range_min) / (range_max - range_min) * (max - min),
+        unit,
+    )
 
 
 def pwd(raw_value, unit=None):

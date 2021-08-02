@@ -47,7 +47,7 @@ def test_voltage(raw, v_min, v_max, expected):
     "raw,min,max,range_min,range_max,expected",
     [
         (500, 0, 100, 0, 2 ** 15 - 1, 1.53),
-        (0, 2, 16, 3276, 16380, 2),
+        (6552, 2, 16, 3276, 16380, 5.5),
     ],
 )
 def test_linear(raw, min, max, range_min, range_max, expected):
