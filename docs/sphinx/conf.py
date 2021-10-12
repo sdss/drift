@@ -47,7 +47,10 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
     "sphinx.ext.intersphinx",
+    "sphinx_click.ext",
+    "sphinx-jsonschema",
     "myst_parser",
+    "sphinx_copybutton",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -127,9 +130,14 @@ intersphinx_mapping = {
 
 autodoc_mock_imports = ["_tkinter"]
 autodoc_member_order = "groupwise"
+autodoc_default_options = {"members": None, "show-inheritance": None}
+autodoc_typehints = "description"
 
 napoleon_use_rtype = False
 napoleon_use_ivar = True
+
+copybutton_prompt_text = r">>> |\$ "
+copybutton_prompt_is_regexp = True
 
 rst_epilog = f"""
 .. |numpy_array| replace:: Numpy array
@@ -140,36 +148,12 @@ rst_epilog = f"""
 
 # -- Options for HTML output ----------------------------------------------
 
-html_css_files = ["pygments.css"]
-
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-
-html_theme = "alabaster"
-
-html_theme_options = {
-    "logo": "sdssv_logo.png",
-    "github_user": "sdss",
-    "github_repo": project,
-    "github_button": True,
-    "github_type": "star",
-    "sidebar_collapse": False,
-    "sidebar_includehidden": False,
-    "page_width": "80%",
-}
-
-html_sidebars = {
-    "**": [
-        "about.html",
-        "localtoc.html",
-        "relations.html",
-        "searchbox.html",
-    ]
-}
-
-html_css_files += ["custom.css"]
-
-html_favicon = "./_static/favicon_sdssv.ico"
+html_theme = "furo"
+html_title = "drift"
+html_logo = "_static/sdssv_logo.png"
+html_favicon = "./_static/favicon.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -180,63 +164,3 @@ if on_rtd:
     html_static_path = []
 else:
     html_static_path = ["_static"]
-
-
-# -- Options for HTMLHelp output ------------------------------------------
-
-# Output file base name for HTML help builder.
-htmlhelp_basename = "{0}pdoc".format("drift")
-
-
-# -- Options for LaTeX output ---------------------------------------------
-
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    #
-    # 'papersize': 'letterpaper',
-    # The font size ('10pt', '11pt' or '12pt').
-    #
-    # 'pointsize': '10pt',
-    # Additional stuff for the LaTeX preamble.
-    #
-    # 'preamble': '',
-    # Latex figure (float) alignment
-    #
-    # 'figure_align': 'htbp',
-}
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (
-        master_doc,
-        "{0}.tex".format(project),
-        "{0} Documentation".format(project),
-        author,
-        "manual",
-    ),
-]
-
-# -- Options for manual page output ---------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "drift", "{0} Documentation".format(project), [author], 1)]
-
-# -- Options for Texinfo output -------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-    (
-        master_doc,
-        project,
-        "{0} Documentation".format(project),
-        author,
-        project,
-        "One line description of project.",
-        "Miscellaneous",
-    ),
-]

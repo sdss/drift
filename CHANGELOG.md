@@ -6,6 +6,10 @@
 
 * Add the option to add an offset to the read value after applying the adaptor.
 
+### ✨ Improved
+
+* Updated documentation theme to ``furo``.
+
 ### 🔧 Fixed
 
 * Fix case when linear adaptor range does not start at zero.

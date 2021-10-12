@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sdss-drift"
-version = "0.2.6-alpha.0"
+version = "0.3.0"
 description = "Modbus PLC control library"
 authors = ["José Sánchez-Gallego <gallegoj@uw.edu>"]
 license = "BSD-3-Clause"
@@ -46,6 +46,12 @@ rstcheck = ">=3.3.1"
 Sphinx = ">=3.5.2"
 black = {version = ">=20.8b1", allow-prereleases = true}
 myst-parser = ">=0.14.0"
+furo = ">=2021.6.18-beta.36"
+nox = ">=2021.6.12"
+sphinx-autobuild = ">=2021.3.14"
+sphinx-copybutton = ">=0.3.3"
+sphinx-click = {version = ">=2.3.0"}
+sphinx-jsonschema = ">=1.16.8"
 
 [tool.black]
 line-length = 88
