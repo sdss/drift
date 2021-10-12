@@ -2,6 +2,10 @@
 
 ## Next version
 
+### 🚀 New
+
+* Add the option to add an offset to the read value after applying the adaptor.
+
 ### 🔧 Fixed
 
 * Fix case when linear adaptor range does not start at zero.
