@@ -34,6 +34,7 @@ modules:
                 mode: coil
                 type: relay
                 relay_type: "NO"
+                offset: 0.0
 
 """
 
@@ -58,6 +59,16 @@ async def test_drift_read(default_drift):
 
     value, units = await default_drift.get_device("module1.temp1").read()
     assert value == pytest.approx(-29.69, 0.01)
+    assert units == "degC"
+
+
+async def test_drift_read_with_offset(default_drift):
+
+    default_drift.modules["module1"].devices["temp1"].offset = 1.5
+    assert await default_drift.get_device("temp1").read(adapt=False) == 100
+
+    value, units = await default_drift.get_device("module1.temp1").read()
+    assert value == pytest.approx(-28.19, 0.01)
     assert units == "degC"
 
 

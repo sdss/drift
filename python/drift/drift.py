@@ -247,6 +247,9 @@ class Device(object):
         A user-defined category for this device. This can be used to group
         devices of similar type from different modules, for example ``'temperature'``
         to indicate temperature sensors.
+    offset
+        A numerical offset to be added to the read value after running the
+        adaptor.
     description
         A description of the purpose of the device.
     units
@@ -276,6 +279,7 @@ class Device(object):
         mode: Optional[str] = None,
         channel: Optional[int] = None,
         description: str = "",
+        offset: float = 0.0,
         units: Optional[str] = None,
         category: Optional[str] = None,
         adaptor: Optional[str | dict | Callable] = None,
@@ -291,6 +295,7 @@ class Device(object):
         self.description = description
         self.units = units
         self.category = category
+        self.offset = offset
         self.adaptor = self._parse_adaptor(adaptor)
         self._adaptor_extra_params = adaptor_extra_params
 
@@ -438,6 +443,9 @@ class Device(object):
                 units = self.units
         else:
             units = self.units
+
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            value += self.offset
 
         return value, units
 
