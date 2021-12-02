@@ -30,7 +30,7 @@ modules:
         model: "750-530"
         devices:
             "relay1":
-                address: 40513
+                address: 512
                 mode: coil
                 type: relay
                 relay_type: "NO"
@@ -164,7 +164,7 @@ async def test_relay_no(drift):
     drift.add_module("module1", mode="coil", channels=4)
     relay = drift["module1"].add_device(
         "relay_no",
-        40001,
+        0,
         device_class=Relay,
         relay_type="NO",
     )
@@ -211,7 +211,7 @@ async def test_read_category(default_drift):
 
     default_drift["module2"].add_device(
         "relay_no",
-        40102,
+        101,
         mode="coil",
         device_class=Relay,
         relay_type="NO",
@@ -237,7 +237,7 @@ async def test_custom_adaptor(default_drift):
     ):
 
         default_drift["module1"].add_device(
-            "device2", 40002, adaptor="drift.adaptors:my_adaptor"
+            "device2", 1, adaptor="drift.adaptors:my_adaptor"
         )
     default_drift._state[1] = 5
 
@@ -256,7 +256,7 @@ async def test_invalid_model(drift):
 async def test_add_device(default_drift):
 
     module2 = default_drift["module2"]
-    relay = Relay(module2, "relay2", 40003, relay_type="NO", mode="coil")
+    relay = Relay(module2, "relay2", 2, relay_type="NO", mode="coil")
     module2.add_device(relay)
 
     assert default_drift.get_device("relay2").relay_type == "NO"
@@ -313,7 +313,7 @@ async def test_add_device_already_exists(default_drift):
 async def test_relay_holding_register(default_drift):
 
     mod = default_drift.add_module("module3", channels=4)
-    dev = mod.add_device("relayH", 40501, mode="holding_register", channel=3)
+    dev = mod.add_device("relayH", 500, mode="holding_register", channel=3)
 
     await dev.write(True)
 
@@ -323,8 +323,8 @@ async def test_relay_holding_register(default_drift):
 async def test_relay_holdin_register_channel0(default_drift):
 
     mod = default_drift.add_module("module3", channels=4)
-    dev1 = mod.add_device("relayH1", 40501, mode="holding_register", channel=0)
-    dev2 = mod.add_device("relayH2", 40501, mode="holding_register", channel=3)
+    dev1 = mod.add_device("relayH1", 500, mode="holding_register", channel=0)
+    dev2 = mod.add_device("relayH2", 500, mode="holding_register", channel=3)
 
     await dev2.write(True)
 

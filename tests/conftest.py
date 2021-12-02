@@ -92,7 +92,7 @@ def default_drift(drift):
     )
     module1.add_device(
         "temp1",
-        40001,
+        0,
         adaptor="linear",
         adaptor_extra_params=(-30, 100, 0, 2 ** 15 - 1),
         units="degC",
@@ -104,7 +104,7 @@ def default_drift(drift):
     )
     module2.add_device(
         "relay1",
-        40101,
+        100,
         mode="coil",
         device_class=Relay,
         category="relay",

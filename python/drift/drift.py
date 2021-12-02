@@ -199,7 +199,7 @@ class Module(object):
                     f"Device {name!r} already exists in module {self.name!r}."
                 )
 
-            assert address, "address cannot be None"
+            assert address is not None, "address cannot be None"
 
             device = device_class(self, name, address, **kwargs)
 
@@ -236,7 +236,9 @@ class Device(object):
     name
         The name of the device. It is treated as case-insensitive.
     address
-        The address of the device.
+        The address of the device. This is the address passed to ``pymodbus``
+        (i.e., the one encoded in the TCP packet) so it should have any offset
+        already removed.
     mode
         The type of object (``coil``, ``discrete``, ``input_register``, or
         ``holding_register``). If `None`, uses the mode from the module.
@@ -407,7 +409,7 @@ class Device(object):
         else:
             raise DriftError(f"invalid mode {self.mode!r}.")
 
-        resp = await reader(self.address - 40001, count=1)
+        resp = await reader(self.address, count=1)
 
         if resp.function_code > 0x80:
             raise DriftError(
@@ -480,16 +482,16 @@ class Device(object):
         protocol = self.client.protocol
 
         if self.mode == "coil":
-            resp = await protocol.write_coil(self.address - 40001, value)
+            resp = await protocol.write_coil(self.address, value)
         else:
             if self.channel is not None:
-                resp = await protocol.read_holding_registers(self.address - 40001)
+                resp = await protocol.read_holding_registers(self.address)
                 current_value = resp.registers[0]
                 if value is True or value > 0:
                     value = current_value | (1 << self.channel)
                 else:
                     value = current_value & (~(1 << self.channel))
-            resp = await protocol.write_register(self.address - 40001, value)
+            resp = await protocol.write_register(self.address, value)
 
         if resp.function_code > 0x80:
             raise DriftError(
@@ -567,7 +569,7 @@ class Drift(object):
 
         drift = Drift('localhost')
         async with drift:
-            coil = drift.client.protocol.read_coils(40001, count=1)
+            coil = drift.client.protocol.read_coils(1, count=1)
 
     This is not needed when using `.Device.read` or `.Device.write`, which
     handle the connection to the server.

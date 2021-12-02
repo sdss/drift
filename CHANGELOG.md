@@ -1,5 +1,12 @@
 # Changelog
 
+## Next version
+
+### 💥 Breaking changes
+
+* Device addresses now must include the offset (i.e., 40001 is not subtracted).
+
+
 ## 0.3.0 - October 12, 2021
 
 ### 🚀 New
