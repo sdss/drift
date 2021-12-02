@@ -88,6 +88,12 @@ def linear(raw_value, min, max, range_min, range_max, unit=None):
     )
 
 
+def proportional(raw_value, factor, unit=None):
+    """Applies a proportional factor."""
+
+    return (float(raw_value) * factor, unit)
+
+
 def pwd(raw_value, unit=None):
     """Pulse Width Modulator (PWM) output.
 

@@ -71,3 +71,10 @@ def test_flow(raw_value, meter_gain, expected):
 
     expected_value = pytest.approx(expected, abs=0.01)
     assert adaptors.flow(raw_value, meter_gain)[0] == expected_value
+
+
+@pytest.mark.parametrize("raw,factor,expected", [(1000, 0.1, 100.0)])
+def test_proportional(raw, factor, expected):
+
+    expected_value = pytest.approx(expected, abs=0.01)
+    assert adaptors.proportional(raw, factor)[0] == expected_value
