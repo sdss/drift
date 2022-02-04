@@ -14,13 +14,13 @@ from drift import adaptors
 def test_ee_temp():
 
     assert adaptors.t_dwyer(0) == (-30, "degC")
-    assert adaptors.t_dwyer(2 ** 15 - 1)[0] == 70
+    assert adaptors.t_dwyer(2**15 - 1)[0] == 70
 
 
 def test_ee_rh():
 
     assert adaptors.rh_dwyer(0) == (0, "percent")
-    assert adaptors.rh_dwyer(2 ** 15 - 1)[0] == 100
+    assert adaptors.rh_dwyer(2**15 - 1)[0] == 100
 
 
 def test_rtd():
@@ -46,7 +46,7 @@ def test_voltage(raw, v_min, v_max, expected):
 @pytest.mark.parametrize(
     "raw,min,max,range_min,range_max,expected",
     [
-        (500, 0, 100, 0, 2 ** 15 - 1, 1.53),
+        (500, 0, 100, 0, 2**15 - 1, 1.53),
         (6552, 2, 16, 3276, 16380, 5.5),
     ],
 )

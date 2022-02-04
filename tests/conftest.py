@@ -94,7 +94,7 @@ def default_drift(drift):
         "temp1",
         0,
         adaptor="linear",
-        adaptor_extra_params=(-30, 100, 0, 2 ** 15 - 1),
+        adaptor_extra_params=(-30, 100, 0, 2**15 - 1),
         units="degC",
     )
 

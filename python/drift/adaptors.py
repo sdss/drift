@@ -16,7 +16,7 @@ def rh_dwyer(raw_value):
 
     # Humidity linear calibration = 100 / (2^15 - 1)
     RH0 = 0.0
-    RHs = 100.0 / (2 ** 15 - 1)
+    RHs = 100.0 / (2**15 - 1)
 
     return (RH0 + RHs * float(raw_value), "percent")
 
@@ -30,7 +30,7 @@ def t_dwyer(raw_value):
 
     # Temperature linear calibration = 100 / (2^15 - 1)
     T0 = -30.0
-    Ts = 100.0 / (2 ** 15 - 1)
+    Ts = 100.0 / (2**15 - 1)
 
     return (T0 + Ts * float(raw_value), "degC")
 
@@ -46,7 +46,7 @@ def rtd(raw_value):
 
     tempRes = 0.1  # Module resolution is 0.1C per ADU
     tempMax = 850.0  # Maximum temperature for a Pt RTD in deg C
-    wrapT = tempRes * (2 ** 16 - 1)  # ADU wrap at 0C to 2^16-1
+    wrapT = tempRes * (2**16 - 1)  # ADU wrap at 0C to 2^16-1
 
     temp = tempRes * raw_value
     if temp > tempMax:
@@ -106,7 +106,7 @@ def pwd(raw_value, unit=None):
 
     """
 
-    return (100 * float(raw_value) / (2 ** 15 - 1), unit)
+    return (100 * float(raw_value) / (2**15 - 1), unit)
 
 
 def flow(raw_value, meter_gain=1):
