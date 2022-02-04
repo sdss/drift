@@ -15,7 +15,6 @@ from collections import defaultdict
 
 from typing import Any, Callable, Optional, Type, cast
 
-import numpy
 from pymodbus.client.asynchronous.async_io import AsyncioModbusTcpClient
 from yaml import SafeLoader, load
 
