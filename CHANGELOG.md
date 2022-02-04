@@ -1,5 +1,12 @@
 # Changelog
 
+## Next version
+
+### 🚀 New
+
+* [#9](https://github.com/sdss/drift/issues/9) `Device` now accepts a `data_type` argument that follows the same format as the [struct](https://docs.python.org/3/library/struct.html#format-characters) module and allows to cast the read raw value from unsigned 16-bit integer to a different type, before passing it to an adaptor.
+
+
 ## 0.4.0 - December 14, 2021
 
 ### 💥 Breaking changes

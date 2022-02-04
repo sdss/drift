@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import importlib
+import struct
 from collections import defaultdict
 
 from typing import Any, Callable, Optional, Type, cast
@@ -256,6 +257,10 @@ class Device(object):
         A description of the purpose of the device.
     units
         The units of the values returned, if an adaptor is used.
+    data_type
+        The data type for the raw values read. If not set, assumes unsigned
+        integer. The format is the same as ``struct`` data types. For example,
+        if reading a signed integer use ``h``.
     adaptor
         The adaptor to be used to convert read registers to physical values.
         It can be a string indicating one of the provided :ref:`adaptors
@@ -284,6 +289,7 @@ class Device(object):
         offset: float = 0.0,
         units: Optional[str] = None,
         category: Optional[str] = None,
+        data_type: Optional[str] = None,
         adaptor: Optional[str | dict | Callable] = None,
         adaptor_extra_params: tuple[Any] = tuple(),
     ):
@@ -298,6 +304,7 @@ class Device(object):
         self.units = units
         self.category = category
         self.offset = offset
+        self.data_type = data_type
         self.adaptor = self._parse_adaptor(adaptor)
         self._adaptor_extra_params = adaptor_extra_params
 
@@ -398,14 +405,19 @@ class Device(object):
 
         protocol = self.client.protocol
 
+        raw_type: str = ""
         if self.mode == "coil":
             reader = protocol.read_coils
+            raw_type = "?"
         elif self.mode == "discrete":
             reader = protocol.read_discrete_inputs
+            raw_type = "?"
         elif self.mode == "input_register":
             reader = protocol.read_input_registers
+            raw_type = "H"
         elif self.mode == "holding_register":
             reader = protocol.read_holding_registers
+            raw_type = "H"
         else:
             raise DriftError(f"invalid mode {self.mode!r}.")
 
@@ -423,6 +435,9 @@ class Device(object):
             value = resp.registers[0]
             if self.channel is not None:
                 value = (value & (1 << self.channel)) > 0
+
+        if self.data_type is not None:
+            value = struct.unpack(self.data_type, struct.pack(f"={raw_type}", value))[0]
 
         if not adapt:
             return value
