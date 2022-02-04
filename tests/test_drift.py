@@ -320,7 +320,7 @@ async def test_relay_holding_register(default_drift):
     assert (await dev.read())[0] is True
 
 
-async def test_relay_holdin_register_channel0(default_drift):
+async def test_relay_holding_register_channel0(default_drift):
 
     mod = default_drift.add_module("module3", channels=4)
     dev1 = mod.add_device("relayH1", 500, mode="holding_register", channel=0)
@@ -333,3 +333,19 @@ async def test_relay_holdin_register_channel0(default_drift):
 
     await dev1.write(False)
     assert (await dev2.read())[0] is True
+
+
+async def test_signed_integer(default_drift):
+
+    default_drift._state[1] = 65500
+    dev = default_drift["module1"].add_device(
+        "temp2",
+        1,
+        mode="holding_register",
+        data_type="h",
+        adaptor="proportional",
+        adaptor_extra_params=[0.1],
+    )
+
+    temp = (await dev.read())[0]
+    assert temp == -3.6
