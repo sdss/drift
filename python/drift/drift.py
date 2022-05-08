@@ -755,7 +755,7 @@ class Drift(object):
         return values
 
     @classmethod
-    def from_config(cls, config: str | dict):
+    def from_config(cls, config: str | dict, **kwargs):
         """Loads a Drift from a dictionary or YAML file.
 
         Parameters
@@ -773,7 +773,7 @@ class Drift(object):
         address = config["address"]
         port = config.get("port", 502)
 
-        new_drift = cls(address, port)
+        new_drift = cls(address, port, **kwargs)
 
         for module in config.get("modules", {}):
 
