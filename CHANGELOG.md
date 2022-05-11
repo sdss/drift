@@ -1,5 +1,12 @@
 # Changelog
 
+## Next version
+
+### ✨ Improved
+
+* `Drift.from_config()` now accepts keyword arguments that are passed to `__init__()`.
+
+
 ## 0.4.1 - February 4, 2022
 
 ### 🚀 New
