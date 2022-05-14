@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.3 - May 13, 2022
+
+### 🎨 Engineering
+
+* Use latest pre-release version of poetry core, do not require `setuptools`, and test for 3.10.
+
+
 ## 0.4.2 - May 11, 2022
 
 ### ✨ Improved
