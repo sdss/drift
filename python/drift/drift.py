@@ -595,18 +595,21 @@ class Drift(object):
         The IP of the TCP modbus server.
     port
         The port of the TCP modbus server.
+    lock
+        Whether to lock the client while it's in use, preventing
+        multiple connections. Only used with the contextual manager.
 
     """
 
-    def __init__(self, address: str, port: int = 502):
+    def __init__(self, address: str, port: int = 502, lock: bool = True):
 
         self.address = address
         self.port = port
         self.client = AsyncioModbusTcpClient(address, port=port)
 
-        self.modules = CaseInsensitiveDict()
+        self.lock = asyncio.Lock() if lock else None
 
-        self.lock = asyncio.Lock()
+        self.modules = CaseInsensitiveDict()
 
     def __repr__(self):
         return f"<Drift @ {self.address}>"
@@ -614,16 +617,19 @@ class Drift(object):
     async def __aenter__(self):
         """Initialises the connection to the server."""
 
-        await self.lock.acquire()
+        if self.lock:
+            await self.lock.acquire()
 
         try:
             await asyncio.wait_for(self.client.connect(), timeout=1)
         except asyncio.TimeoutError:
-            self.lock.release()
+            if self.lock:
+                self.lock.release()
             raise DriftError(f"Failed connecting to server at {self.address}.")
 
         if not self.client.connected:
-            self.lock.release()
+            if self.lock:
+                self.lock.release()
             raise DriftError(f"Failed connecting to server at {self.address}.")
 
         log.debug(f"Connected to {self.address}.")
@@ -635,7 +641,9 @@ class Drift(object):
 
         self.client.stop()
         log.debug(f"Disonnected from {self.address}.")
-        self.lock.release()
+
+        if self.lock:
+            self.lock.release()
 
         return
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## Next version
+
+### ✨ New
+
+* `Drift()` can now be initialised with `lock=False` which will disable the locking of the client while the context manager is used. In this mode, multiple concurrent connections to the client are allowed.
+
+
 ## 0.4.3 - May 13, 2022
 
 ### 🎨 Engineering

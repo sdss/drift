@@ -349,3 +349,10 @@ async def test_signed_integer(default_drift):
 
     temp = (await dev.read())[0]
     assert temp == -3.6
+
+
+async def test_drift_read_no_lock(default_drift):
+
+    default_drift.lock = None
+
+    assert await default_drift.get_device("temp1").read(adapt=False) == 100
