@@ -72,7 +72,6 @@ addopts = "--cov drift --cov-report xml --cov-report html --cov-report term -W i
 
 [tool.coverage.run]
 branch = true
-include = ["python/drift/*"]
 omit = [
     "*/__init__.py",
     "*/exceptions.py"
@@ -81,7 +80,8 @@ omit = [
 [tool.coverage.report]
 exclude_lines = [
     "class CaseInsensitiveDict",
-    "def __repr__"
+    "def __repr__",
+    "pragma: no cover"
 ]
 
 [build-system]
