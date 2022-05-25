@@ -6,6 +6,7 @@
 
 * `Drift()` can now be initialised with `lock=False` which will disable the locking of the client while the context manager is used. In this mode, multiple concurrent connections to the client are allowed.
 * Added `Drift.read_devices()` which allows reading multiple devices concurrently with only one connection to the client.
+* `Drift.devices` returns a list of all connected devices.
 
 ### ✨ Improved
 

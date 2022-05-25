@@ -366,3 +366,8 @@ async def test_drift_read_devices(default_drift: Drift, lock: bool, adapt: bool)
         assert results == [100, 0]
     else:
         assert results == [(pytest.approx(-29.69, 0.01), "degC"), ("closed", None)]
+
+
+async def test_drift_devices(default_drift: Drift):
+
+    assert default_drift.devices == ["temp1", "relay1"]

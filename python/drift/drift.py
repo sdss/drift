@@ -641,10 +641,21 @@ class Drift(object):
 
         return
 
-    def __getitem__(self, name: str):
+    def __getitem__(self, name: str) -> Module:
         """Gets a module."""
 
         return self.modules[name]
+
+    @property
+    def devices(self):
+        """Lists the devices connected across all modules."""
+
+        devices = []
+        for module in self.modules:
+            for device in self[module].devices:
+                devices.append(device)
+
+        return devices
 
     def add_module(self, name: str, **kwargs) -> Module:
         """Adds a new module.
