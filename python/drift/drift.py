@@ -317,7 +317,7 @@ class Device(object):
         ]:
             raise DriftError(f"Invalid mode {mode!r}.")
 
-        if self.channel is not None:
+        if self.channel is not None and self.module.channels:
             assert self.channel < self.module.channels
 
         log.info(
