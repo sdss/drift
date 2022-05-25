@@ -709,6 +709,8 @@ class Drift(object):
 
         Parameters
         ----------
+        name
+            The device to read.
         adapt
             If possible, convert the value to real units.
 
@@ -720,6 +722,53 @@ class Drift(object):
         """
 
         return await self.get_device(name).read(adapt=adapt)
+
+    async def read_devices(
+        self,
+        devices: list[str],
+        adapt: bool = True,
+        lock: bool | None = None,
+    ):
+        """Reads a list of devices minimising the number of connections to the client.
+
+        Parameters
+        ----------
+        devices
+            The list of devices to read.
+        adapt
+            If possible, convert the value to real units.
+        lock
+            If `True`, lock the client while reading the devices. If `None`, use
+            the default locking mechanism.
+
+        Returns
+        -------
+        read_values
+            A list of read values. If `adapt=True`, each element is a tuple of
+            value and unit.
+
+        """
+
+        lock = lock if lock is not None else (self.lock is not None)
+
+        tasks = []
+        for device in devices:
+            tasks.append(self.get_device(device).read(adapt=adapt, connect=False))
+
+        if lock and self.lock:
+            await self.lock.acquire()
+
+        try:
+            await asyncio.wait_for(self.client.connect(), timeout=1)
+            results = await asyncio.gather(*tasks)
+        finally:
+            if self.client.connected:
+                self.client.stop()
+
+            if lock and self.lock:
+                self.lock.release()
+
+        return results
 
     async def read(self, *args, **kwargs):
         """Alias for `.read_device`."""

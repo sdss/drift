@@ -237,7 +237,9 @@ async def test_custom_adaptor(default_drift):
     ):
 
         default_drift["module1"].add_device(
-            "device2", 1, adaptor="drift.adaptors:my_adaptor"
+            "device2",
+            1,
+            adaptor="drift.adaptors:my_adaptor",
         )
     default_drift._state[1] = 5
 
@@ -273,7 +275,7 @@ async def test_adaptor_extra_params(default_drift):
     dev.adaptor = adaptors.voltage
     dev._adaptor_extra_params = [0, 20, 10]
 
-    dev.read(adapt=True) == (200, "V")
+    assert (await dev.read(adapt=True)) == (200, "V")
 
 
 async def test_module_bad_mode(default_drift):
@@ -356,3 +358,19 @@ async def test_drift_read_no_lock(default_drift):
     default_drift.lock = None
 
     assert await default_drift.get_device("temp1").read(adapt=False) == 100
+
+
+@pytest.mark.parametrize("lock", [True, False])
+@pytest.mark.parametrize("adapt", [True, False])
+async def test_drift_read_devices(default_drift: Drift, lock: bool, adapt: bool):
+
+    results = await default_drift.read_devices(
+        ["temp1", "relay1"],
+        adapt=adapt,
+        lock=lock,
+    )
+
+    if adapt is False:
+        assert results == [100, 0]
+    else:
+        assert results == [(pytest.approx(-29.69, 0.01), "degC"), ("closed", None)]
