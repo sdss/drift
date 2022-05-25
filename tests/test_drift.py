@@ -296,14 +296,6 @@ async def test_device_bad_mode(default_drift):
         default_drift["module2"].add_device("test", 40100, mode="aaa")
 
 
-async def test_unknown_channels(default_drift):
-
-    with pytest.raises(DriftError) as err:
-        default_drift.add_module("test")
-
-    assert "Cannot determine module number of channels." in str(err)
-
-
 async def test_add_device_already_exists(default_drift):
 
     with pytest.raises(DriftError) as err:

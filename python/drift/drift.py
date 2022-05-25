@@ -140,24 +140,18 @@ class Module(object):
         ]:
             raise DriftError(f"Invalid mode {mode!r}.")
 
-        if channels is not None:
-            self.channels = channels
-        else:
-            if default_channels is None:
-                raise DriftError("Cannot determine module number of channels.")
-            self.channels = default_channels
-
+        self.channels = channels or default_channels
         self.devices = CaseInsensitiveDict()
 
         log.info(
             f"Created module {self.name} with mode {self.mode!r} "
-            f"and {self.channels} channels."
+            f"and {self.channels or '?'} channels."
         )
 
     def __repr__(self):
         return (
             f"<Module {self.name} (mode={self.mode!r}, "
-            f"channels={self.channels}, n_devices={len(self.devices)})>"
+            f"channels={self.channels or '?'}, n_devices={len(self.devices)})>"
         )
 
     def __getitem__(self, name: str) -> Device:
