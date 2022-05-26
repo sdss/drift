@@ -1,6 +1,6 @@
 # Changelog
 
-## Next version
+## 0.4.4 - May 25, 2022
 
 ### ✨ New
 
@@ -11,6 +11,7 @@
 ### ✨ Improved
 
 * `Module` does not require to pass a number of channels anymore. In fact the number of channels is never used so it may be deprecated in the future.
+* Add poetry dependency groups.
 
 
 ## 0.4.3 - May 13, 2022
