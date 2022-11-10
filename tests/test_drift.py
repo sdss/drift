@@ -72,9 +72,20 @@ async def test_drift_read_with_offset(default_drift):
     assert units == "degC"
 
 
-async def test_drift_connect_fails(default_drift, mocker):
+async def test_drift_connect_timeouts(default_drift, mocker):
 
     default_drift.client.connect = mocker.MagicMock(side_effect=asyncio.TimeoutError)
+
+    with pytest.raises(DriftError):
+        async with default_drift:
+            pass
+
+    assert not default_drift.lock.locked()
+
+
+async def test_drift_connect_fails(default_drift, mocker):
+
+    default_drift.client.connect = mocker.MagicMock(side_effect=ConnectionRefusedError)
 
     with pytest.raises(DriftError):
         async with default_drift:

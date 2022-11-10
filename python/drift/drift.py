@@ -619,7 +619,11 @@ class Drift(object):
         except asyncio.TimeoutError:
             if self.lock:
                 self.lock.release()
-            raise DriftError(f"Failed connecting to server at {self.address}.")
+            raise DriftError(f"Timed out connecting to server at {self.address}.")
+        except Exception as err:
+            if self.lock:
+                self.lock.release()
+            raise DriftError(f"Failed connecting to server at {self.address}: {err}.")
 
         if not self.client.connected:
             if self.lock:

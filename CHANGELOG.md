@@ -1,5 +1,12 @@
 # Changelog
 
+## Next version
+
+### 🔧 Fixed
+
+* Release lock if connection fail in `Drift.__aenter__`.
+
+
 ## 0.4.4 - May 25, 2022
 
 ### ✨ New
