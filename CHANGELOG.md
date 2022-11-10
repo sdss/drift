@@ -1,6 +1,6 @@
 # Changelog
 
-## Next version
+## 0.4.5 - November 9, 2022
 
 ### 🔧 Fixed
 
