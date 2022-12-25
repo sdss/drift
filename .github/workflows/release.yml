@@ -16,7 +16,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Drift {{ github.red }}
+          name: Drift {{ github.ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
