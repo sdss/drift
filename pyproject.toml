@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sdss-drift"
-version = "0.4.6a0"
+version = "1.0.0"
 description = "Modbus PLC control library"
 authors = ["José Sánchez-Gallego <gallegoj@uw.edu>"]
 license = "BSD-3-Clause"
