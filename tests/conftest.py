@@ -6,26 +6,16 @@
 # @Filename: conftest.py
 # @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
 
-import sys
 import types
 from functools import partial
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from drift import Drift, Relay
 
 
-if sys.version_info.major < 3:
-    raise ValueError("Python 2 is not supported.")
-if sys.version_info.minor <= 7:
-    from asyncmock import AsyncMock
-else:
-    from unittest.mock import AsyncMock
-
-
 async def read_mocker(state, address, coil=False, count=1):
-
     response = types.SimpleNamespace()
     response.function_code = 0
     response.bits = []
@@ -42,7 +32,6 @@ async def read_mocker(state, address, coil=False, count=1):
 
 
 async def write_mocker(state, address, value):
-
     response = types.SimpleNamespace()
     response.function_code = 0
 
@@ -61,7 +50,7 @@ def drift():
     state = drift_instance._state  # type: ignore
 
     drift_instance.client.connect = AsyncMock()  # type: ignore
-    drift_instance.client.close = AsyncMock()  # type: ignore
+    drift_instance.client.stop = AsyncMock()  # type: ignore
     drift_instance.client.connected = True
 
     # Make protocol a mock. Since we are also mocking connect, the protocol

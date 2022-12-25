@@ -15,7 +15,7 @@ from collections import defaultdict
 
 from typing import Any, Callable, Optional, Type, cast
 
-from pymodbus.client.asynchronous.async_io import AsyncioModbusTcpClient
+from pymodbus.client import AsyncModbusTcpClient
 from yaml import SafeLoader, load
 
 from drift import adaptors, log
@@ -109,7 +109,6 @@ class Module(object):
         channels: Optional[int] = None,
         description: str = "",
     ):
-
         self.name = name
         self.drift = drift
 
@@ -182,11 +181,9 @@ class Module(object):
         """
 
         if isinstance(name, Device):
-
             device = name
 
         else:
-
             device_class = device_class or Device
 
             if name in self.devices:
@@ -287,7 +284,6 @@ class Device(object):
         adaptor: Optional[str | dict | Callable] = None,
         adaptor_extra_params: tuple[Any] = tuple(),
     ):
-
         assert isinstance(module, Module), "module not a valid Module object."
 
         self.module = module
@@ -338,7 +334,6 @@ class Device(object):
             return None
 
         elif isinstance(adaptor, str):
-
             if ":" in adaptor:
                 try:
                     module_str, adaptor = adaptor.split(":")
@@ -357,7 +352,7 @@ class Device(object):
             return dict(adaptor)
 
     @property
-    def client(self) -> AsyncioModbusTcpClient | None:
+    def client(self) -> AsyncModbusTcpClient | None:
         """Returns the ``pymodbus`` client."""
 
         return self.module.drift.client
@@ -394,7 +389,6 @@ class Device(object):
             return await self._read(adapt=adapt)
 
     async def _read(self, adapt=True):
-
         assert self.client and self.client.protocol
 
         protocol = self.client.protocol
@@ -485,7 +479,6 @@ class Device(object):
             return await self._write(value)
 
     async def _write(self, value):
-
         assert self.client and self.client.protocol
 
         protocol = self.client.protocol
@@ -523,7 +516,6 @@ class Relay(Device):
     __type__ = "relay"
 
     def __init__(self, module: Module, *args, relay_type="NC", **kwargs):
-
         self.relay_type = relay_type
 
         if relay_type == "NC":
@@ -571,7 +563,7 @@ class Drift(object):
 
     `.Drift` manages the TCP connection to the modbus ethernet module
     using `Pymodbus <pymodbus.readthedocs.io/en/latest/index.html>`__. The
-    ``AsyncioModbusTcpClient`` object can be accessed as ``Drift.client``.
+    ``AsyncModbusTcpClient`` object can be accessed as ``Drift.client``.
 
     In general the connection is opened and closed using the a context
     manager ::
@@ -596,10 +588,9 @@ class Drift(object):
     """
 
     def __init__(self, address: str, port: int = 502, lock: bool = True):
-
         self.address = address
         self.port = port
-        self.client = AsyncioModbusTcpClient(address, port=port)
+        self.client = AsyncModbusTcpClient(address, port=port)
 
         self.lock = asyncio.Lock() if lock else None
 
@@ -637,7 +628,7 @@ class Drift(object):
     async def __aexit__(self, exc_type, exc, tb):
         """Closes the connection to the server."""
 
-        self.client.stop()
+        await self.client.close()
         log.debug(f"Disonnected from {self.address}.")
 
         if self.lock:
@@ -772,7 +763,7 @@ class Drift(object):
             results = await asyncio.gather(*tasks)
         finally:
             if self.client.connected:
-                self.client.stop()
+                await self.client.close()
 
             if lock and self.lock:
                 self.lock.release()
@@ -842,14 +833,12 @@ class Drift(object):
         new_drift = cls(address, port, **kwargs)
 
         for module in config.get("modules", {}):
-
             module_config = config["modules"][module]
             devices = module_config.pop("devices", {})
 
             new_drift.add_module(module, **module_config)
 
             for device in devices:
-
                 device_config = devices[device].copy()
                 address = device_config.pop("address")
                 device_class = None
