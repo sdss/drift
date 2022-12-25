@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1 - December 24, 2022
+
+### 🔧 Fixed
+
+* Fixed reconnection. `pymodbus` now set the host to `None` after the transport closes, so it needs to be rested before reconnecting.
+
+
 ## 1.0.0 - December 24, 2022
 
 ### 🚀 New

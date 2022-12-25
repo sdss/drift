@@ -606,6 +606,8 @@ class Drift(object):
             await self.lock.acquire()
 
         try:
+            # After a self.client.close() pymodbus sets the host to None.
+            self.client.params.host = self.address
             await asyncio.wait_for(self.client.connect(), timeout=1)
         except asyncio.TimeoutError:
             if self.lock:
@@ -759,6 +761,8 @@ class Drift(object):
             await self.lock.acquire()
 
         try:
+            # After a self.client.close() pymodbus sets the host to None.
+            self.client.params.host = self.address
             await asyncio.wait_for(self.client.connect(), timeout=1)
             results = await asyncio.gather(*tasks)
         finally:
