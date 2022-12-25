@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 - December 24, 2022
+
+### 🚀 New
+
+* Dropped Python 3.7 and add support for 3.11 with `pymodbus>=3.0.0`.
+
+
 ## 0.4.5 - November 9, 2022
 
 ### 🔧 Fixed
@@ -9,7 +16,7 @@
 
 ## 0.4.4 - May 25, 2022
 
-### ✨ New
+### 🚀 New
 
 * `Drift()` can now be initialised with `lock=False` which will disable the locking of the client while the context manager is used. In this mode, multiple concurrent connections to the client are allowed.
 * Added `Drift.read_devices()` which allows reading multiple devices concurrently with only one connection to the client.
