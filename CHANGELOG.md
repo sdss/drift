@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2 - March 10, 2023
+
+### 🔧 Fixed
+
+* Pin `pymodbus<3.2.0`. This versions removes the `protocol` attribute in `AsyncioModbusTcpClient` and breaks `drift`. It will be fixed in a future version.
+
+
 ## 1.0.1 - December 24, 2022
 
 ### 🔧 Fixed

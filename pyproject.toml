@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sdss-drift"
-version = "1.0.2a0"
+version = "1.0.2"
 description = "Modbus PLC control library"
 authors = ["José Sánchez-Gallego <gallegoj@uw.edu>"]
 license = "BSD-3-Clause"
@@ -25,7 +25,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.8"
 sdsstools = ">=0.4.1"
-pymodbus = "^3.0.0"
+pymodbus = ">3.0.0,<3.2.0"
 
 [tool.poetry.dev-dependencies]
 ipython = ">=7.11.0"
