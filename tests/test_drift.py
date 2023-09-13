@@ -8,7 +8,7 @@
 
 import asyncio
 import types
-from unittest.mock import patch
+from unittest.mock import PropertyMock, patch
 
 import pytest
 from yaml import SafeLoader, load
@@ -187,18 +187,14 @@ async def test_adaptor_tuple():
     relay["mode"] = "coil"
 
     drift = Drift.from_config(config_dict)
-
-    drift.client.connect = AsyncMock()
-    drift.client.stop = AsyncMock()
-    drift.client.connected = True
-
-    drift.client.protocol = AsyncMock()
+    drift.client = AsyncMock()
+    type(drift.client).connected = PropertyMock(return_value=True)
 
     response = types.SimpleNamespace()
     response.function_code = 0
     response.bits = [False]
 
-    drift.client.protocol.read_coils = AsyncMock(return_value=response)
+    drift.client.read_coils = AsyncMock(return_value=response)
 
     assert (await drift["module1"]["relay1"].read())[0] == "open"
 

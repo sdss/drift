@@ -8,7 +8,7 @@
 
 import types
 from functools import partial
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, PropertyMock
 
 import pytest
 
@@ -49,23 +49,26 @@ def drift():
     drift_instance._state = {}  # type: ignore
     state = drift_instance._state  # type: ignore
 
-    drift_instance.client.connect = AsyncMock()  # type: ignore
-    drift_instance.client.stop = AsyncMock()  # type: ignore
-    drift_instance.client.connected = True
+    drift_instance.client = AsyncMock()
 
-    # Make protocol a mock. Since we are also mocking connect, the protocol
-    # never changes and remains a mock.
-    drift_instance.client.protocol = AsyncMock()
+    connected = PropertyMock(return_value=True)
+    type(drift_instance.client).connected = connected
 
-    protocol = drift_instance.client.protocol
-
-    protocol.read_input_registers = MagicMock(
+    drift_instance.client.read_input_registers = MagicMock(
         side_effect=partial(read_mocker, state, coil=False)
     )
-    protocol.read_coils = MagicMock(side_effect=partial(read_mocker, state, coil=True))
-    protocol.read_holding_registers = MagicMock(side_effect=partial(read_mocker, state))
-    protocol.write_coil = MagicMock(side_effect=partial(write_mocker, state))
-    protocol.write_register = MagicMock(side_effect=partial(write_mocker, state))
+    drift_instance.client.read_coils = MagicMock(
+        side_effect=partial(read_mocker, state, coil=True)
+    )
+    drift_instance.client.read_holding_registers = MagicMock(
+        side_effect=partial(read_mocker, state)
+    )
+    drift_instance.client.write_coil = MagicMock(
+        side_effect=partial(write_mocker, state)
+    )
+    drift_instance.client.write_register = MagicMock(
+        side_effect=partial(write_mocker, state)
+    )
 
     yield drift_instance
 

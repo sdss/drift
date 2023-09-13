@@ -282,7 +282,7 @@ class Device(object):
         category: Optional[str] = None,
         data_type: Optional[str] = None,
         adaptor: Optional[str | dict | Callable] = None,
-        adaptor_extra_params: tuple[Any] = tuple(),
+        adaptor_extra_params: tuple = (),
     ):
         assert isinstance(module, Module), "module not a valid Module object."
 
@@ -389,27 +389,25 @@ class Device(object):
             return await self._read(adapt=adapt)
 
     async def _read(self, adapt=True):
-        assert self.client and self.client.protocol
-
-        protocol = self.client.protocol
+        assert self.client
 
         raw_type: str = ""
         if self.mode == "coil":
-            reader = protocol.read_coils
+            reader = self.client.read_coils
             raw_type = "?"
         elif self.mode == "discrete":
-            reader = protocol.read_discrete_inputs
+            reader = self.client.read_discrete_inputs
             raw_type = "?"
         elif self.mode == "input_register":
-            reader = protocol.read_input_registers
+            reader = self.client.read_input_registers
             raw_type = "H"
         elif self.mode == "holding_register":
-            reader = protocol.read_holding_registers
+            reader = self.client.read_holding_registers
             raw_type = "H"
         else:
             raise DriftError(f"invalid mode {self.mode!r}.")
 
-        resp = await reader(self.address, count=1)
+        resp = await reader(self.address, count=1)  # type: ignore
 
         if resp.function_code > 0x80:
             raise DriftError(
@@ -479,21 +477,21 @@ class Device(object):
             return await self._write(value)
 
     async def _write(self, value):
-        assert self.client and self.client.protocol
-
-        protocol = self.client.protocol
+        assert self.client
 
         if self.mode == "coil":
-            resp = await protocol.write_coil(self.address, value)
+            resp = await self.client.write_coil(self.address, value)  # type:ignore
         else:
             if self.channel is not None:
-                resp = await protocol.read_holding_registers(self.address)
+                resp = await self.client.read_holding_registers(
+                    self.address
+                )  # type:ignore
                 current_value = resp.registers[0]
                 if value is True or value > 0:
                     value = current_value | (1 << self.channel)
                 else:
                     value = current_value & (~(1 << self.channel))
-            resp = await protocol.write_register(self.address, value)
+            resp = await self.client.write_register(self.address, value)  # type:ignore
 
         if resp.function_code > 0x80:
             raise DriftError(
@@ -606,8 +604,6 @@ class Drift(object):
             await self.lock.acquire()
 
         try:
-            # After a self.client.close() pymodbus sets the host to None.
-            self.client.params.host = self.address
             await asyncio.wait_for(self.client.connect(), timeout=1)
         except asyncio.TimeoutError:
             if self.lock:
@@ -618,7 +614,7 @@ class Drift(object):
                 self.lock.release()
             raise DriftError(f"Failed connecting to server at {self.address}: {err}.")
 
-        if not self.client.connected:
+        if self.client.connected is not True:
             if self.lock:
                 self.lock.release()
             raise DriftError(f"Failed connecting to server at {self.address}.")
@@ -630,7 +626,7 @@ class Drift(object):
     async def __aexit__(self, exc_type, exc, tb):
         """Closes the connection to the server."""
 
-        await self.client.close()
+        self.client.close()
         log.debug(f"Disonnected from {self.address}.")
 
         if self.lock:
@@ -762,12 +758,11 @@ class Drift(object):
 
         try:
             # After a self.client.close() pymodbus sets the host to None.
-            self.client.params.host = self.address
             await asyncio.wait_for(self.client.connect(), timeout=1)
             results = await asyncio.gather(*tasks)
         finally:
             if self.client.connected:
-                await self.client.close()
+                self.client.close()
 
             if lock and self.lock:
                 self.lock.release()
