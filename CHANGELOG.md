@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.0 - September 12, 2023
+
+### 🚀 New
+
+* Allow to set the connection timeout when initialising `Drift`.
+
+### ⚙️ Engineering
+
+* Lint with `ruff`.
+* Update codebase to work with `pymodbus` 3.5+.
+
+
 ## 1.0.2 - March 10, 2023
 
 ### 🔧 Fixed
