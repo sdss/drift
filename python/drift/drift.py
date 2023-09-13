@@ -582,15 +582,24 @@ class Drift(object):
     lock
         Whether to lock the client while it's in use, preventing
         multiple connections. Only used with the contextual manager.
+    timeout
+        Connection timeout in seconds.
 
     """
 
-    def __init__(self, address: str, port: int = 502, lock: bool = True):
+    def __init__(
+        self,
+        address: str,
+        port: int = 502,
+        lock: bool = True,
+        timeout: float = 1,
+    ):
         self.address = address
         self.port = port
         self.client = AsyncModbusTcpClient(address, port=port)
 
         self.lock = asyncio.Lock() if lock else None
+        self.timeout = timeout
 
         self.modules = CaseInsensitiveDict()
 
@@ -604,7 +613,7 @@ class Drift(object):
             await self.lock.acquire()
 
         try:
-            await asyncio.wait_for(self.client.connect(), timeout=1)
+            await asyncio.wait_for(self.client.connect(), timeout=self.timeout)
         except asyncio.TimeoutError:
             if self.lock:
                 self.lock.release()
@@ -758,7 +767,7 @@ class Drift(object):
 
         try:
             # After a self.client.close() pymodbus sets the host to None.
-            await asyncio.wait_for(self.client.connect(), timeout=1)
+            await asyncio.wait_for(self.client.connect(), timeout=self.timeout)
             results = await asyncio.gather(*tasks)
         finally:
             if self.client.connected:
