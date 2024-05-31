@@ -1,5 +1,12 @@
 # Changelog
 
+## Next version
+
+### 🚀 New
+
+* Added a new `convert` module with function to convert register unsigned 16-bit integers to different data types.
+
+
 ## 1.1.0 - September 12, 2023
 
 ### 🚀 New

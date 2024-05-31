@@ -219,3 +219,10 @@ Available adaptors
 
 .. automodule:: drift.adaptors
     :members:
+
+
+Data conversion
+^^^^^^^^^^^^^^^
+
+.. automodule:: drift.convert
+    :members:
