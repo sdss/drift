@@ -40,8 +40,8 @@ async def write_mocker(state, address, value):
     return response
 
 
-@pytest.fixture
-def drift():
+@pytest.fixture()
+async def drift():
     """A fixture for a mocked Drift."""
 
     drift_instance = Drift("localhost")
